@@ -1,4 +1,4 @@
-import { forwardRef, LegacyRef } from "react";
+import { forwardRef } from "react";
 import {
   View,
   Text,
@@ -62,7 +62,7 @@ export const Input = forwardRef(
 
     return (
       <>
-        <Text style={style.titleInput}>{title}</Text>
+        {title&&<Text style={style.titleInput}>{title}</Text>}
         <View style={[style.boxInput,{paddingLeft:calculateSizePaddingLeft()}]}>
           {IconLeft && iconLeftName && (
             <TouchableOpacity onPress={onIconLeftPress}>

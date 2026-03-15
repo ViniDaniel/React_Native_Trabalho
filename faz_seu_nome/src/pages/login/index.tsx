@@ -4,6 +4,7 @@ import logo from "../../assets/logo.png";
 import { Input } from "../../components/input";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { useState } from "react";
+import { Button } from "../../components/button";
 
 
 export default function Login(){
@@ -37,19 +38,12 @@ export default function Login(){
                 onIconRightPress={()=>setShowPassword(!showPassword)}
                 
                 />
-                {/* <Text style={style.titleInput}>Endereço de E-Mail</Text>
-                <View>
-                    <TextInput />
-                </View>
-                <Text>Senha</Text>
-                <View>
-                    <TextInput />
-                </View> */}
+
             </View>
             <View style={style.boxBottom}>
-                <TouchableOpacity>
-                    <Text>Entrar</Text>
-                </TouchableOpacity>
+                <Button text="Entrar"
+                />
+
             </View>
             <Text>Cadastre-se</Text>
         </View>
