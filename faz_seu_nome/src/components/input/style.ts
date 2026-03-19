@@ -25,5 +25,10 @@ export const style = StyleSheet.create({
   },
   icon:{
     width:"100%"
-  }
+  },
+  errorText:{
+  color: "red",
+  fontSize: 12,
+  marginTop: 4
+}
 });

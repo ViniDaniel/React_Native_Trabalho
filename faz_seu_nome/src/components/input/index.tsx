@@ -7,7 +7,11 @@ import {
   TouchableOpacity,
 } from "react-native";
 import { style } from "./style";
-import { FontAwesome,  MaterialCommunityIcons, Octicons } from "@expo/vector-icons";
+import {
+  FontAwesome,
+  MaterialCommunityIcons,
+  Octicons,
+} from "@expo/vector-icons";
 import { themas } from "../../global/themas";
 
 type IconComponent =
@@ -21,6 +25,7 @@ type Props = TextInputProps & {
   iconLeftName?: string;
   iconRightName?: string;
   title?: string;
+  error?: string;
   onIconLeftPress?: () => void;
   onIconRightPress?: () => void;
 };
@@ -33,37 +38,38 @@ export const Input = forwardRef(
       iconLeftName,
       iconRightName,
       title,
+      error,
       onIconLeftPress,
       onIconRightPress,
       ...rest
     } = Props;
 
+    const calculateSizeWidht = () => {
+      if (IconLeft && IconRight) {
+        return "80%";
+      } else if (IconLeft || IconRight) {
+        return "90%";
+      } else {
+        return "100%";
+      }
+    };
 
-    const calculateSizeWidht = ()=>{
-        if(IconLeft && IconRight){
-            return '80%'
-        } else if(IconLeft || IconRight){
-            return '90%'
-        } else {
-            return '100%'
-        }
-    }
-
-        const calculateSizePaddingLeft = ()=>{
-        if(IconLeft && IconRight){
-            return 10
-        } else if(IconLeft || IconRight){
-            return 10
-        } else {
-            return 20
-        }
-    }
-
+    const calculateSizePaddingLeft = () => {
+      if (IconLeft && IconRight) {
+        return 10;
+      } else if (IconLeft || IconRight) {
+        return 10;
+      } else {
+        return 20;
+      }
+    };
 
     return (
       <>
-        {title&&<Text style={style.titleInput}>{title}</Text>}
-        <View style={[style.boxInput,{paddingLeft:calculateSizePaddingLeft()}]}>
+        {title && <Text style={style.titleInput}>{title}</Text>}
+        <View
+          style={[style.boxInput, { paddingLeft: calculateSizePaddingLeft() }]}
+        >
           {IconLeft && iconLeftName && (
             <TouchableOpacity onPress={onIconLeftPress}>
               <IconLeft
@@ -74,9 +80,10 @@ export const Input = forwardRef(
               />
             </TouchableOpacity>
           )}
-          <TextInput style={[
-            style.input,{width:calculateSizeWidht()}
-            ]} {...rest} />
+          <TextInput
+            style={[style.input, { width: calculateSizeWidht() }]}
+            {...rest}
+          />
           {IconRight && iconRightName && (
             <TouchableOpacity onPress={onIconRightPress}>
               <IconRight
@@ -88,6 +95,7 @@ export const Input = forwardRef(
             </TouchableOpacity>
           )}
         </View>
+        {error && <Text style={style.errorText}>{error}</Text>}
       </>
     );
   },

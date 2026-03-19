@@ -6,30 +6,21 @@ export const style = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
   },
-  boxTop: {
-    height: Dimensions.get("window").height / 3,
-    width: "100%",
-    alignItems: "center",
-    justifyContent: "center",
+text: {
+    fontWeight: "bold",
+    fontSize: 18,
+    marginTop: 40,
   },
-  boxMid: {
+  boxCadastro:{
     height: Dimensions.get("window").height / 4,
     width: "100%",
 
     paddingHorizontal: 37,
   },
-  boxBottom: {
+boxButton:{
     height: Dimensions.get("window").height / 3,
     width: "100%",
     alignItems: "center",
-  },
-  logo: {
-    width: 200,
-    height: 200,
-  },
-  text: {
-    fontWeight: "bold",
-    fontSize: 18,
-    marginTop: 40,
-  },
-});
+    paddingTop: "80%"
+}
+})
