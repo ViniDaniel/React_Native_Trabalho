@@ -1,10 +1,11 @@
-import { Image, Text, View, Alert } from "react-native";
+import { Image, Text, View, Alert, TouchableOpacity } from "react-native";
 import { style } from "./styles";
 import logo from "../../assets/logo.png";
 import { Input } from "../../components/input";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { useState, useContext } from "react";
 import { Button } from "../../components/button";
+import { Button2 } from "../../components/button2";
 import { useNavigation } from "@react-navigation/native";
 import { RootStackParamList } from "../../routes/types";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
@@ -67,11 +68,13 @@ export default function Login() {
       <View style={style.boxBottom}>
         <Button text="Entrar" onPress={handlelogin} loading={loading} />
       </View>
+      <View style={style.touchButton}>
+        <Button2
+          text="Cadastre-se"
+          onPress={() => navigation.navigate("CadastroUsuario")}
+        />
+      </View>
 
-      <Button
-        text="Cadastre-se"
-        onPress={() => navigation.navigate("CadastroUsuario")}
-      />
       <Button
         text="Ver Banco de Dados"
         onPress={() => navigation.navigate("TestDB")}

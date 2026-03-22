@@ -2,6 +2,7 @@ import { getDB } from "./db";
 
 export async function insertProduto(
   nome:string,
+  marca: string,
   quantidade:number,
   valor:number
 ){
@@ -13,8 +14,8 @@ export async function insertProduto(
   const db = await getDB();
 
   const result = await db.runAsync(
-    "INSERT INTO produtos (nome, quantidade, valor) VALUES (?,?,?)",
-    [nome,quantidade,valor]
+    "INSERT INTO produtos (nome, marca, quantidade, valor) VALUES (?,?,?,?)",
+    [nome, marca, quantidade,valor]
   );
 
   return result.lastInsertRowId

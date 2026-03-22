@@ -3,4 +3,5 @@ export type RootStackParamList = {
   CadastroUsuario: undefined;
   Estoque: undefined;
   TestDB: undefined;
+  CadastrarProduto: undefined;
 };

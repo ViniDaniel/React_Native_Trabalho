@@ -6,8 +6,8 @@ import { createUser } from "../../service/userService";
 import { Text, View, Alert } from "react-native";
 import { style } from "./style";
 import { useNavigation } from "@react-navigation/native";
-import { RootStackParamList } from '../../routes/types';
-import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import { RootStackParamList } from "../../routes/types";
+import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 
 export default function CadastroUsuario() {
   const [nome, setNome] = useState("");
@@ -27,14 +27,13 @@ export default function CadastroUsuario() {
   });
 
   type NavigationProps = NativeStackNavigationProp<
-  RootStackParamList,
-  "CadastroUsuario"
->;
+    RootStackParamList,
+    "CadastroUsuario"
+  >;
 
-const navigation = useNavigation<NavigationProps>();
+  const navigation = useNavigation<NavigationProps>();
 
   const handleCadastro = async () => {
-    // limpa erros antes
     const newErrors = {
       nome: "",
       cpf: "",
@@ -43,8 +42,18 @@ const navigation = useNavigation<NavigationProps>();
       confirmPassword: "",
     };
 
+    // 🔹 Validações básicas
+    if (!nome) newErrors.nome = "Nome é obrigatório";
+    if (!cpf) newErrors.cpf = "CPF é obrigatório";
+    if (!email) newErrors.email = "Email é obrigatório";
+    if (!password) newErrors.password = "Senha é obrigatória";
+    if (!confirmPassword) newErrors.confirmPassword = "Confirme sua senha";
+
     if (password !== confirmPassword) {
       newErrors.confirmPassword = "As senhas precisam ser iguais";
+    }
+
+    if (Object.values(newErrors).some((e) => e !== "")) {
       setErrors(newErrors);
       return;
     }
@@ -54,21 +63,41 @@ const navigation = useNavigation<NavigationProps>();
 
       await createUser(nome, cpf, email, password);
 
-      setErrors(newErrors);
+      setErrors({
+        nome: "",
+        cpf: "",
+        email: "",
+        password: "",
+        confirmPassword: "",
+      });
 
       Alert.alert("Sucesso", "Usuário cadastrado com sucesso");
 
       navigation.replace("Login");
     } catch (err: any) {
-      setErrors({
+      console.log("ERRO COMPLETO:", err);
+      console.log("MENSAGEM:", err.message);
+      const updatedErrors = {
         ...newErrors,
-        email: err.message || "Erro ao cadastrar",
-      });
+      };
+
+      const message = err.message || "";
+
+      if (
+        message.includes("users.cpf") ||
+        message.includes("CPF_JA_CADASTRADO")
+      ) {
+        updatedErrors.cpf = "CPF já cadastrado";
+      } else if (message.includes("EMAIL_JA_CADASTRADO")) {
+        updatedErrors.email = "E-mail já cadastrado";
+      } else {
+        updatedErrors.email = "Erro ao cadastrar usuário";
+      }
+      setErrors(updatedErrors);
     } finally {
       setLoading(false);
     }
   };
-
   return (
     <View style={style.container}>
       <Text style={style.text}>Crie sua conta</Text>

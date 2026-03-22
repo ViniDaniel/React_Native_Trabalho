@@ -7,7 +7,7 @@ export const style = StyleSheet.create({
     justifyContent: "center",
   },
   boxTop: {
-    height: Dimensions.get("window").height / 3,
+    height: Dimensions.get("window").height / 4,
     width: "100%",
     alignItems: "center",
     justifyContent: "center",
@@ -19,7 +19,7 @@ export const style = StyleSheet.create({
     paddingHorizontal: 37,
   },
   boxBottom: {
-    height: Dimensions.get("window").height / 3,
+    height: Dimensions.get("window").height / 8,
     width: "100%",
     alignItems: "center",
   },
@@ -32,4 +32,10 @@ export const style = StyleSheet.create({
     fontSize: 18,
     marginTop: 40,
   },
+  touchButton: {
+    fontSize: 12,
+    paddingBottom: 20,
+    textDecorationLine: "underline",
+    color: "#FFDBBB"
+  }
 });

@@ -4,7 +4,8 @@ import { userValidation } from "../validations/userValidation";
 
 // Gera um salt aleatório
 function generateSalt(length = 16): string {
-  const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+  const chars =
+    "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
   let salt = "";
   for (let i = 0; i < length; i++) {
     salt += chars.charAt(Math.floor(Math.random() * chars.length));
@@ -17,18 +18,21 @@ async function hashPassword(password: string): Promise<string> {
   const salt = generateSalt();
   const hash = await Crypto.digestStringAsync(
     Crypto.CryptoDigestAlgorithm.SHA256,
-    salt + password
+    salt + password,
   );
   // Salva salt + hash juntos para poder comparar depois
   return `${salt}:${hash}`;
 }
 
 // Compara a senha informada com o hash salvo
-async function verifyPassword(password: string, stored: string): Promise<boolean> {
+async function verifyPassword(
+  password: string,
+  stored: string,
+): Promise<boolean> {
   const [salt, originalHash] = stored.split(":");
   const hash = await Crypto.digestStringAsync(
     Crypto.CryptoDigestAlgorithm.SHA256,
-    salt + password
+    salt + password,
   );
   return hash === originalHash;
 }
@@ -37,13 +41,13 @@ export async function createUser(
   nome: string,
   cpf: string,
   email: string,
-  password: string
+  password: string,
 ) {
   const error = userValidation(nome, cpf, email, password);
   if (error) throw new Error(error);
 
   const userExist = await findUserByEmail(email);
-  if (userExist) throw new Error("Usuário já existe");
+  if (userExist) throw new Error("EMAIL_JA_CADASTRADO");
 
   const hashedPassword = await hashPassword(password);
   await insertUser(nome, cpf, email, hashedPassword);

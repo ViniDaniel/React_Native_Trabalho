@@ -5,6 +5,10 @@ export const style = StyleSheet.create({
     marginLeft: 5,
     marginTop: 20,
   },
+  containerInput: {
+    width: "100%",
+    marginBottom: 12,
+  },
   boxInput: {
     width: "100%",
     height: 40,
@@ -17,18 +21,18 @@ export const style = StyleSheet.create({
     backgroundColor: themas.colors.lightGray,
     borderColor: themas.colors.lightGray,
   },
-    input: {
+  input: {
     height: "100%",
     width: "90%",
     borderRadius: 40,
-    paddingLeft:5
+    paddingLeft: 5,
   },
-  icon:{
-    width:"100%"
+  icon: {
+    width: "100%",
   },
-  errorText:{
-  color: "red",
-  fontSize: 12,
-  marginTop: 4
-}
+  errorText: {
+    color: "red",
+    fontSize: 12,
+    marginTop: 4,
+  },
 });

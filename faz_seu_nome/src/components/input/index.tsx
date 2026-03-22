@@ -31,7 +31,7 @@ type Props = TextInputProps & {
 };
 
 export const Input = forwardRef(
-  (Props: Props, ref: React.Ref<TextInput> | null) => {
+  (props: Props, ref: React.Ref<TextInput> | null) => {
     const {
       IconLeft,
       IconRight,
@@ -42,33 +42,28 @@ export const Input = forwardRef(
       onIconLeftPress,
       onIconRightPress,
       ...rest
-    } = Props;
+    } = props;
 
     const calculateSizeWidht = () => {
-      if (IconLeft && IconRight) {
-        return "80%";
-      } else if (IconLeft || IconRight) {
-        return "90%";
-      } else {
-        return "100%";
-      }
+      if (IconLeft && IconRight) return "80%";
+      if (IconLeft || IconRight) return "90%";
+      return "100%";
     };
 
     const calculateSizePaddingLeft = () => {
-      if (IconLeft && IconRight) {
-        return 10;
-      } else if (IconLeft || IconRight) {
-        return 10;
-      } else {
-        return 20;
-      }
+      if (IconLeft || IconRight) return 10;
+      return 20;
     };
 
     return (
-      <>
+      <View style={style.containerInput}>
         {title && <Text style={style.titleInput}>{title}</Text>}
+
         <View
-          style={[style.boxInput, { paddingLeft: calculateSizePaddingLeft() }]}
+          style={[
+            style.boxInput,
+            { paddingLeft: calculateSizePaddingLeft() },
+          ]}
         >
           {IconLeft && iconLeftName && (
             <TouchableOpacity onPress={onIconLeftPress}>
@@ -80,10 +75,13 @@ export const Input = forwardRef(
               />
             </TouchableOpacity>
           )}
+
           <TextInput
+            ref={ref}
             style={[style.input, { width: calculateSizeWidht() }]}
             {...rest}
           />
+
           {IconRight && iconRightName && (
             <TouchableOpacity onPress={onIconRightPress}>
               <IconRight
@@ -95,8 +93,9 @@ export const Input = forwardRef(
             </TouchableOpacity>
           )}
         </View>
-        {error && <Text style={style.errorText}>{error}</Text>}
-      </>
+
+        {error ? <Text style={style.errorText}>{error}</Text> : null}
+      </View>
     );
-  },
+  }
 );

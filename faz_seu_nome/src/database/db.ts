@@ -15,7 +15,8 @@ export async function getDB() {
 export async function createTables() {
   
     const db = await getDB()
-  
+    
+    //await db.execAsync(`DROP TABLE IF EXISTS produtos;`);
 
     await db.execAsync(`
         CREATE TABLE IF NOT EXISTS users (
@@ -29,6 +30,7 @@ export async function createTables() {
         CREATE TABLE IF NOT EXISTS produtos (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             nome TEXT NOT NULL,
+            marca TEXT NOT NULL,
             quantidade INTEGER NOT NULL,
             valor REAL NOT NULL
         );
