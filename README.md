@@ -3,14 +3,14 @@
 
 # Funcionais
 
-* Controle de estoque 
+* Controle de estoque ✅
 * Busca e Filtragem de Produtos 
 * Conclusões de vendas 
 * Envio de E-mail 
 * Alerta de estoque baixo
 * Alerta de meta de vendas
 * Dashboard de vendas
-* Cadastro de clientes
+* Cadastro de clientes✅
 * Cadastro de Produtos ✅
 * Notificação de meta atingida
 * Atualização de clientes
