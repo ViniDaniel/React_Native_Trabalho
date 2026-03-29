@@ -59,6 +59,8 @@ return(
     <Button text="Sair"
     onPress={logout}/>
     <Button text="Cadastrar Produto" onPress={() => navigation.navigate("CadastrarProduto")}/>
+        <Button text="Cadastrar Cliente" onPress={() => navigation.navigate("CadastrarCliente")} />
+            <Button text="Clientes" onPress={() => navigation.navigate("Clientes")} />
     </ScrollView>
 )
 }

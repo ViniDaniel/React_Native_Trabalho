@@ -31,6 +31,14 @@ export default function CadastroUsuario() {
     "CadastroUsuario"
   >;
 
+      const formatarCPF = (valor: string) => {
+        const numeros = valor.replace(/\D/g, "").slice(0, 11);
+        return numeros
+          .replace(/(\d{3})(\d)/, "$1.$2")
+          .replace(/(\d{3})(\d)/, "$1.$2")
+          .replace(/(\d{3})(\d{1,2})$/, "$1-$2");
+      };
+
   const navigation = useNavigation<NavigationProps>();
 
   const handleCadastro = async () => {
@@ -42,7 +50,8 @@ export default function CadastroUsuario() {
       confirmPassword: "",
     };
 
-    // 🔹 Validações básicas
+
+
     if (!nome) newErrors.nome = "Nome é obrigatório";
     if (!cpf) newErrors.cpf = "CPF é obrigatório";
     if (!email) newErrors.email = "Email é obrigatório";
@@ -61,7 +70,7 @@ export default function CadastroUsuario() {
     try {
       setLoading(true);
 
-      await createUser(nome, cpf, email, password);
+      await createUser(nome, cpf.replace(/\D/g, ""), email, password);
 
       setErrors({
         nome: "",
@@ -88,7 +97,11 @@ export default function CadastroUsuario() {
         message.includes("CPF_JA_CADASTRADO")
       ) {
         updatedErrors.cpf = "CPF já cadastrado";
-      } else if (message.includes("EMAIL_JA_CADASTRADO")) {
+      } else if (
+        message.includes("CPF Inválido")) {
+          updatedErrors.cpf = "CPF Inválido"
+        }
+        else if (message.includes("EMAIL_JA_CADASTRADO")) {
         updatedErrors.email = "E-mail já cadastrado";
       } else {
         updatedErrors.email = "Erro ao cadastrar usuário";
@@ -115,7 +128,8 @@ export default function CadastroUsuario() {
         <Input
           title="CPF"
           value={cpf}
-          onChangeText={setCpf}
+          onChangeText={(text) => setCpf(formatarCPF(text))}
+          keyboardType="numeric"
           IconRight={MaterialCommunityIcons}
           iconRightName="card-account-details"
           error={errors.cpf}

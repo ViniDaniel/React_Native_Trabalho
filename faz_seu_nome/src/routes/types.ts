@@ -4,4 +4,6 @@ export type RootStackParamList = {
   Estoque: undefined;
   TestDB: undefined;
   CadastrarProduto: undefined;
+  CadastrarCliente: undefined;
+  Clientes: undefined;
 };
