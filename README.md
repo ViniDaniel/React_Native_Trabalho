@@ -13,7 +13,7 @@
 * Cadastro de clientes✅
 * Cadastro de Produtos ✅
 * Notificação de meta atingida
-* Atualização de clientes
+* Atualização de clientes✅
 * Atualização de estoque
 * Login com o e-mail ✅
 * Criação de senhas ✅

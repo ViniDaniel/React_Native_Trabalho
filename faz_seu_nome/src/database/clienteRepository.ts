@@ -16,6 +16,27 @@ export async function insertCliente(
 
 export async function getAllClientes() {
   const db = await getDB();
-  const result = await db.getAllAsync("SELECT id, nome, cpf, email, celular FROM clientes");
-  return result;
+  return await db.getAllAsync("SELECT id, nome, cpf, email, celular FROM clientes");
+}
+
+export async function getClienteById(id: number) {
+  const db = await getDB();
+  return await db.getFirstAsync(
+    "SELECT id, nome, cpf, email, celular FROM clientes WHERE id = ?",
+    [id]
+  );
+}
+
+export async function updateCliente(
+  id: number,
+  nome: string,
+  cpf: string,
+  email: string,
+  celular: string,
+) {
+  const db = await getDB();
+  await db.runAsync(
+    "UPDATE clientes SET nome = ?, cpf = ?, email = ?, celular = ? WHERE id = ?",
+    [nome, cpf, email, celular, id]
+  );
 }

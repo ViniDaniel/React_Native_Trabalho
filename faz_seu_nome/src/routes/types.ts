@@ -6,4 +6,5 @@ export type RootStackParamList = {
   CadastrarProduto: undefined;
   CadastrarCliente: undefined;
   Clientes: undefined;
+  EditarCliente: { id: number };
 };
