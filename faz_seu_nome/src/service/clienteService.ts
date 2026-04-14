@@ -16,11 +16,10 @@ export async function createCliente(
 export async function editarCliente(
   id: number,
   nome: string,
-  cpf: string,
   email: string,
   celular: string,
 ) {
-  const error = clienteValidation(nome, cpf, email, celular);
+  const error = clienteValidation(nome, email, celular);
   if (error) throw new Error(error);
-  await updateCliente(id, nome, cpf, email, celular);
+  await updateCliente(id, nome, email, celular);
 }

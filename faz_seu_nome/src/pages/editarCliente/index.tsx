@@ -20,13 +20,12 @@ export default function EditarCliente() {
   const { id } = route.params;
 
   const [nome, setNome] = useState("");
-  const [cpf, setCpf] = useState("");
   const [email, setEmail] = useState("");
   const [celular, setCelular] = useState("");
   const [loading, setLoading] = useState(false);
 
   const [erros, setErrors] = useState({
-    nome: "", cpf: "", email: "", celular: "",
+    nome: "", email: "", celular: "",
   });
 
   useEffect(() => {
@@ -34,21 +33,12 @@ export default function EditarCliente() {
       const cliente = await getClienteById(id) as any;
       if (cliente) {
         setNome(cliente.nome);
-        setCpf(cliente.cpf);
         setEmail(cliente.email);
         setCelular(cliente.celular);
       }
     }
     carregarCliente();
   }, [id]);
-
-  const formatarCPF = (valor: string) => {
-    const numeros = valor.replace(/\D/g, "").slice(0, 11);
-    return numeros
-      .replace(/(\d{3})(\d)/, "$1.$2")
-      .replace(/(\d{3})(\d)/, "$1.$2")
-      .replace(/(\d{3})(\d{1,2})$/, "$1-$2");
-  };
 
   const formatarCelular = (valor: string) => {
     const numeros = valor.replace(/\D/g, "").slice(0, 11);
@@ -61,8 +51,6 @@ export default function EditarCliente() {
     const newErros = { nome: "", cpf: "", email: "", celular: "" };
 
     if (!nome) newErros.nome = "O nome do cliente é obrigatório!";
-    if (!cpf || cpf.replace(/\D/g, "").length !== 11)
-      newErros.cpf = "Informe um CPF válido com 11 dígitos!";
     if (!email || !email.includes("@"))
       newErros.email = "Informe um e-mail válido!";
     if (!celular || celular.replace(/\D/g, "").length < 10)
@@ -75,7 +63,7 @@ export default function EditarCliente() {
 
     try {
       setLoading(true);
-      await editarCliente(id, nome, cpf.replace(/\D/g, ""), email, celular.replace(/\D/g, ""));
+      await editarCliente(id, nome, email, celular.replace(/\D/g, ""));
       Alert.alert("Sucesso", "Cliente atualizado com sucesso!", [
         { text: "OK", onPress: () => navigation.goBack() }
       ]);
@@ -98,15 +86,6 @@ export default function EditarCliente() {
           IconRight={MaterialCommunityIcons}
           iconRightName="account"
           error={erros.nome}
-        />
-        <Input
-          title="CPF"
-          value={cpf}
-          onChangeText={(text) => setCpf(formatarCPF(text))}
-          keyboardType="numeric"
-          IconRight={MaterialCommunityIcons}
-          iconRightName="card-account-details-outline"
-          error={erros.cpf}
         />
         <Input
           title="E-mail"

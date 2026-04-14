@@ -30,13 +30,12 @@ export async function getClienteById(id: number) {
 export async function updateCliente(
   id: number,
   nome: string,
-  cpf: string,
   email: string,
   celular: string,
 ) {
   const db = await getDB();
   await db.runAsync(
-    "UPDATE clientes SET nome = ?, cpf = ?, email = ?, celular = ? WHERE id = ?",
-    [nome, cpf, email, celular, id]
+    "UPDATE clientes SET nome = ?, email = ?, celular = ? WHERE id = ?",
+    [nome, email, celular, id]
   );
 }
