@@ -48,4 +48,16 @@ export const style = StyleSheet.create({
     alignItems: "center",
     marginTop: 8,
   },
+    deleteButton: {
+    marginTop: 10,
+    backgroundColor: "#ff8080",
+    borderRadius: 6,
+    padding: 8,
+    alignItems: "center",
+  },
+  deleteButtonText: {
+    color: "#530000",
+    fontWeight: "bold",
+    fontSize: 14,
+  },
 });

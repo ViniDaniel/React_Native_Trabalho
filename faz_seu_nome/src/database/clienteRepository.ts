@@ -39,3 +39,10 @@ export async function updateCliente(
     [nome, email, celular, id]
   );
 }
+
+export async function deleteCliente(id:number) {
+  const db = await getDB()
+  await db.runAsync(
+    "DELETE FROM clientes WHERE id = ?", [id]
+  )
+}

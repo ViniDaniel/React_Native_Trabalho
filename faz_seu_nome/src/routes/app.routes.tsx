@@ -5,6 +5,7 @@ import CadastrarProduto from "../pages/estoqueAdd";
 import CadastrarCliente from "../pages/cadastroCliente";
 import Clientes from "../pages/clientes";
 import EditarCliente from "../pages/editarCliente";
+import EditarProduto from "../pages/editarProduto";
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
@@ -16,6 +17,7 @@ export function AppRoutes() {
       <Stack.Screen name="CadastrarCliente" component={CadastrarCliente} />
       <Stack.Screen name="Clientes" component={Clientes} />
       <Stack.Screen name="EditarCliente" component={EditarCliente} />
+      <Stack.Screen name="EditarProduto" component={EditarProduto} />
     </Stack.Navigator>
   );
 }

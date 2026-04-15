@@ -48,7 +48,7 @@ export default function EditarCliente() {
   };
 
   const handleAtualizar = async () => {
-    const newErros = { nome: "", cpf: "", email: "", celular: "" };
+    const newErros = { nome: "", email: "", celular: "" };
 
     if (!nome) newErros.nome = "O nome do cliente é obrigatório!";
     if (!email || !email.includes("@"))
