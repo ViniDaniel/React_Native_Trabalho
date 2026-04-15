@@ -9,7 +9,7 @@ export function clienteValidation(
   if (!nome || nome.trim().length < 1) {
     return "Nome do cliente inválido";
   }
-  if (cpfValue !== undefined && !cpf.isValid(cpfValue)) {
+  if (cpfValue !== undefined && !cpf.isValid(cpfValue.trim())) {
     return "CPF Inválido";
   }
   if (!email || !email.includes("@")) {

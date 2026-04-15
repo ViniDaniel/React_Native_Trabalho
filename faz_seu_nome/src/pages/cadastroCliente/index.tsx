@@ -1,3 +1,5 @@
+/* cadastroCliente */
+
 import { Alert, Text, View } from "react-native";
 import { Input } from "../../components/input";
 import { Button } from "../../components/button";

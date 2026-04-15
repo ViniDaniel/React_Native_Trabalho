@@ -60,4 +60,15 @@ export const style = StyleSheet.create({
     fontWeight: "bold",
     fontSize: 14,
   },
+  searchInput: {
+  backgroundColor: "#fff",
+  borderRadius: 8,
+  paddingHorizontal: 12,
+  paddingVertical: 8,
+  marginHorizontal: 16,
+  marginBottom: 12,
+  borderWidth: 1,
+  borderColor: "#ccc",
+  fontSize: 14,
+},
 });

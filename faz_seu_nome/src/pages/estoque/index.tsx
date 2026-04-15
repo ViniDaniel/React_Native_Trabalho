@@ -1,6 +1,6 @@
 /* estoque */
 
-import { Alert, Text, View, ScrollView, TouchableOpacity } from "react-native";
+import { Alert, Text, View, ScrollView, TouchableOpacity, TextInput } from "react-native";
 import { AuthContext } from "../../context/authContext";
 import { useContext, useEffect, useState } from "react";
 import { Button } from "../../components/button";
@@ -24,13 +24,19 @@ export default function Estoque() {
   const isFocused = useIsFocused();
 
   const [produtos, setProdutos] = useState<any[]>([]);
-
+  const [busca, setBusca] = useState("");
   const formatarMoeda = (valor: number) => {
     return valor.toLocaleString("pt-BR", {
       style: "currency",
       currency: "BRL",
     });
   };
+
+  const produtosFiltrados = produtos.filter(
+    (p) =>
+      p.nome.toLowerCase().includes(busca.toLowerCase()) ||
+      p.marca.toLowerCase().includes(busca.toLowerCase()),
+  );
 
   const handleDeletar = async (id: number) => {
     Alert.alert(
@@ -63,10 +69,17 @@ export default function Estoque() {
     <ScrollView style={style.container}>
       <Text style={style.title}>Produtos</Text>
 
-      {produtos.length === 0 ? (
+      <TextInput
+        style={style.searchInput}
+        placeholder="Buscar por nome ou marca..."
+        value={busca}
+        onChangeText={setBusca}
+      />
+
+      {produtosFiltrados.length === 0 ? (
         <Text style={style.empty}>Nenhum Produto Cadastrado</Text>
       ) : (
-        produtos.map((p) => (
+        produtosFiltrados.map((p) => (
           <View key={p.id} style={style.card}>
             <Text style={style.label}>
               Nome do Produto: <Text style={style.value}>{p.nome}</Text>

@@ -1,4 +1,4 @@
-import { Alert, Text, View, ScrollView, TouchableOpacity } from "react-native";
+import { Alert, Text, View, ScrollView, TouchableOpacity, TextInput } from "react-native";
 import { useEffect, useState } from "react";
 import { Button } from "../../components/button";
 import { Button2 } from "../../components/button2";
@@ -18,7 +18,7 @@ export default function Clientes() {
   >;
   const navigation = useNavigation<NavigationProps>();
   const isFocused = useIsFocused();
-
+  const [busca, setBusca] = useState("");
   const [clientes, setClientes] = useState<any[]>([]);
 
   useEffect(() => {
@@ -28,6 +28,14 @@ export default function Clientes() {
     }
     if (isFocused) fetchClientes();
   }, [isFocused]);
+
+    const clientesFiltrados = clientes.filter(
+    (c) =>
+      c.nome.toLowerCase().includes(busca.toLowerCase()) ||
+      c.cpf.toLowerCase().includes(busca.toLowerCase()) ||
+      c.email.toLowerCase().includes(busca.toLowerCase()) ||
+      c.celular.toLowerCase().includes(busca.toLowerCase())
+  );
 
   const handleDeletar = async (id: number) => {
     Alert.alert(
@@ -51,10 +59,17 @@ export default function Clientes() {
     <ScrollView style={style.container}>
       <Text style={style.title}>Clientes</Text>
 
-      {clientes.length === 0 ? (
+            <TextInput
+              style={style.searchInput}
+              placeholder="Buscar por nome, cpf, e-mail ou celular..."
+              value={busca}
+              onChangeText={setBusca}
+            />
+
+      {clientesFiltrados.length === 0 ? (
         <Text style={style.empty}>Nenhum Cliente Cadastrado</Text>
       ) : (
-        clientes.map((c) => (
+        clientesFiltrados.map((c) => (
           <View key={c.id} style={style.card}>
             <Text style={style.label}>
               Nome: <Text style={style.value}>{c.nome}</Text>

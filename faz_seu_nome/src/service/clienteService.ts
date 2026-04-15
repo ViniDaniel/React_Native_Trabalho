@@ -1,3 +1,5 @@
+/* clienteService */
+
 import { insertCliente, updateCliente } from "../database/clienteRepository";
 import { clienteValidation } from "../validations/clienteValidation";
 
@@ -7,7 +9,7 @@ export async function createCliente(
     email: string,
     celular: string,
 ) {
-    const error = clienteValidation(nome, cpf, email, celular);
+    const error = clienteValidation(nome, email, celular, cpf);
     if (error) throw new Error(error);
 
     await insertCliente(nome, cpf, email, celular);
