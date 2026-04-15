@@ -4,7 +4,7 @@
 # Funcionais
 
 * Controle de estoque ✅
-* Busca e Filtragem de Produtos 
+* Busca e Filtragem de Produtos ✅
 * Conclusões de vendas 
 * Envio de E-mail 
 * Alerta de estoque baixo
@@ -14,7 +14,7 @@
 * Cadastro de Produtos ✅
 * Notificação de meta atingida
 * Atualização de clientes✅
-* Atualização de estoque
+* Atualização de estoque✅
 * Login com o e-mail ✅
 * Criação de senhas ✅
 * Tela de login ✅
