@@ -1,5 +1,7 @@
-import { Image, Text, View, Alert, TouchableOpacity } from "react-native";
-import { style } from "./styles";
+// tela de login
+
+import { Image, Text, View, Alert } from "react-native";
+import { createStyle } from "./styles";
 import logo from "../../assets/logo.png";
 import { Input } from "../../components/input";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
@@ -11,13 +13,20 @@ import { RootStackParamList } from "../../routes/types";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { loginUser } from "../../service/userService";
 import { AuthContext } from "../../context/authContext";
+import { StatusBar } from "expo-status-bar";
+import { useTheme } from "../../global/themeContext";
+import { darkTheme, lightTheme } from "../../global/themas";
+import { TopBar } from "../../components/topBar"; // ← 
+
 
 export default function Login() {
   type NavigationProps = NativeStackNavigationProp<RootStackParamList, "Login">;
-
   const navigation = useNavigation<NavigationProps>();
-
   const { login } = useContext(AuthContext);
+
+  const { dark, fontScale } = useTheme();
+  const colors = dark ? darkTheme : lightTheme;
+  const style = createStyle(colors, fontScale); // ← 
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -27,9 +36,7 @@ export default function Login() {
   const handlelogin = async () => {
     try {
       setLoading(true);
-
       await loginUser(email, password);
-
       await login();
     } catch (err: any) {
       Alert.alert("Erro", err.message || "Erro ao fazer login");
@@ -40,9 +47,21 @@ export default function Login() {
 
   return (
     <View style={style.container}>
+      <StatusBar style={dark ? "light" : "dark"} />
+
+      <TopBar />
+
       <View style={style.boxTop}>
-        <Image source={logo} style={style.logo} resizeMode="contain" />
+        <View style={style.logoHalo3}>
+          <View style={style.logoHalo2}>
+            <View style={style.logoHalo1}>
+              <Image source={logo} style={style.logo} resizeMode="contain" />
+            </View>
+          </View>
+        </View>
+
         <Text style={style.text}>Seja Bem Vindo(a)</Text>
+        <Text style={style.subtitle}>Faça login para continuar</Text>
       </View>
 
       <View style={style.boxMid}>
@@ -52,8 +71,11 @@ export default function Login() {
           onChangeText={setEmail}
           IconRight={MaterialCommunityIcons}
           iconRightName="email"
+          keyboardType="email-address"
+          autoCapitalize="none"
+          placeholder="Digite seu e-mail"
+          placeholderTextColor={colors.textFaint}
         />
-
         <Input
           title="Senha"
           value={password}
@@ -62,23 +84,27 @@ export default function Login() {
           iconRightName={showPassword ? "eye-off" : "eye"}
           secureTextEntry={showPassword}
           onIconRightPress={() => setShowPassword(!showPassword)}
+          placeholder="Digite sua senha"
+          placeholderTextColor={colors.textFaint}
         />
       </View>
 
       <View style={style.boxBottom}>
         <Button text="Entrar" onPress={handlelogin} loading={loading} />
-      </View>
-      <View style={style.touchButton}>
-        <Button2
-          text="Cadastre-se"
-          onPress={() => navigation.navigate("CadastroUsuario")}
-        />
+        <View style={style.touchButton}>
+          <Button2
+            text="Cadastre-se"
+            onPress={() => navigation.navigate("CadastroUsuario")}
+          />
+        </View>
       </View>
 
-      <Button
-        text="Ver Banco de Dados"
-        onPress={() => navigation.navigate("TestDB")}
-      />
+      <View style={style.devButton}>
+        <Button
+          text="Ver Banco de Dados"
+          onPress={() => navigation.navigate("TestDB")}
+        />
+      </View>
     </View>
   );
 }

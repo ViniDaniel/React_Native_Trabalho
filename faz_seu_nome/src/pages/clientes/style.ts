@@ -1,74 +1,169 @@
 import { StyleSheet } from "react-native";
+import { fontSizes } from "../../global/themas";
 
-export const style = StyleSheet.create({
-  container: {
-    flex: 1,
-    padding: 20,
-    backgroundColor: "#fff",
-  },
-  title: {
-    fontSize: 22,
-    fontWeight: "bold",
-    marginVertical: 20,
-    textAlign: "center",
-  },
-  empty: {
-    textAlign: "center",
-    marginTop: 40,
-    color: "#999",
-    fontSize: 16,
-  },
-  card: {
-    backgroundColor: "#f5f5f5",
-    borderRadius: 8,
-    padding: 14,
-    marginBottom: 12,
-  },
-  label: {
-    fontWeight: "bold",
-    fontSize: 14,
-    marginBottom: 4,
-  },
-  value: {
-    fontWeight: "normal",
-  },
-  editButton: {
-    marginTop: 10,
-    backgroundColor: "#e0f0ff",
-    borderRadius: 6,
-    padding: 8,
-    alignItems: "center",
-  },
-  editButtonText: {
-    color: "#0066cc",
-    fontWeight: "bold",
-    fontSize: 14,
-  },
-  touchButton: {
-    alignItems: "center",
-    marginTop: 8,
-  },
+export const createStyle = (colors: any, fontScale: number = 1.0) => {
+  const fs = fontSizes(fontScale);
+
+  return StyleSheet.create({
+    container: {
+      flex: 1,
+      padding: 20,
+      backgroundColor: colors.background,
+    },
+
+    contentContainer: {
+      paddingBottom: 100,
+    },
+    themeButton: {
+      position: "absolute",
+      top: 0,
+      right: 0,
+      zIndex: 10,
+      width: 38,
+      height: 38,
+      borderRadius: 19,
+      backgroundColor: colors.yellowTint,
+      alignItems: "center",
+      justifyContent: "center",
+      borderWidth: 1,
+      borderColor: colors.yellowBorder,
+    },
+
+    fontScaleButtons: {
+      position: "absolute",
+      top: 0,
+      left: 0,
+      zIndex: 10,
+      flexDirection: "row",
+      gap: 8,
+    },
+
+    fontButton: {
+      width: 38,
+      height: 38,
+      borderRadius: 19,
+      backgroundColor: colors.yellowTint,
+      alignItems: "center",
+      justifyContent: "center",
+      borderWidth: 1,
+      borderColor: colors.yellowBorder,
+    },
+
+    fontButtonText: {
+      color: colors.yellow,
+      fontWeight: "700",
+      fontSize: fs.sm,
+    },
+
+    header: {
+      marginBottom: 32,
+      marginTop: 50,
+    },
+    title: {
+      fontSize: fs.xxl,
+      fontWeight: "800",
+      color: colors.text,
+      letterSpacing: 0.4,
+      marginBottom: 20,
+      marginRight: 48,
+    },
+
+    empty: {
+      textAlign: "center",
+      marginTop: 40,
+      fontSize: fs.base,
+      color: colors.textMuted,
+    },
+
+    card: {
+      backgroundColor: colors.card,
+      borderRadius: 14,
+      padding: 14,
+      marginBottom: 12,
+      borderWidth: 1,
+      borderColor: colors.border,
+    },
+
+    label: {
+      fontWeight: "bold",
+      fontSize: fs.sm,
+      marginBottom: 4,
+      color: colors.text,
+    },
+
+    value: {
+      fontWeight: "normal",
+      color: colors.text,
+    },
+
+    actionsRow: {
+      flexDirection: "row",
+      gap: 10,
+      marginTop: 14,
+    },
+
+    actionButton: {
+      flex: 1,
+      minHeight: 46,
+      borderRadius: 12,
+      paddingHorizontal: 12,
+      paddingVertical: 10,
+      alignItems: "center",
+      justifyContent: "center",
+      flexDirection: "row",
+      gap: 8,
+    },
+
+    pressedButton: {
+      opacity: 0.88,
+      transform: [{ scale: 0.98 }],
+    },
+
+    editButton: {
+      backgroundColor: colors.surface,
+      borderWidth: 1,
+      borderColor: colors.border,
+    },
+
+    editButtonText: {
+      color: colors.text,
+      fontWeight: "700",
+      fontSize: fs.sm,
+    },
+
     deleteButton: {
-    marginTop: 10,
-    backgroundColor: "#ff8080",
-    borderRadius: 6,
-    padding: 8,
-    alignItems: "center",
-  },
-  deleteButtonText: {
-    color: "#530000",
-    fontWeight: "bold",
-    fontSize: 14,
-  },
-  searchInput: {
-  backgroundColor: "#fff",
-  borderRadius: 8,
-  paddingHorizontal: 12,
-  paddingVertical: 8,
-  marginHorizontal: 16,
-  marginBottom: 12,
-  borderWidth: 1,
-  borderColor: "#ccc",
-  fontSize: 14,
-},
-});
+      backgroundColor: colors.error,
+      borderWidth: 1,
+      borderColor: colors.error,
+    },
+
+    deleteButtonText: {
+      color: "#FFFFFF",
+      fontWeight: "700",
+      fontSize: fs.sm,
+    },
+
+    searchInput: {
+      backgroundColor: colors.surface,
+      borderRadius: 10,
+      paddingHorizontal: 12,
+      paddingVertical: 10,
+      marginBottom: 12,
+      borderWidth: 1,
+      borderColor: colors.border,
+      fontSize: fs.sm,
+      color: colors.text,
+    },
+
+    buttonGroup: {
+      width: "100%",
+      marginTop: 20,
+      gap: 10,
+    },
+
+    touchButton: {
+      alignItems: "center",
+      marginTop: 8,
+    },
+  });
+};

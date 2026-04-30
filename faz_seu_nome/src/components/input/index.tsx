@@ -6,13 +6,14 @@ import {
   TextInputProps,
   TouchableOpacity,
 } from "react-native";
-import { style } from "./style";
+import { createStyle } from "./style";
 import {
   FontAwesome,
   MaterialCommunityIcons,
   Octicons,
 } from "@expo/vector-icons";
-import { themas } from "../../global/themas";
+import { useTheme } from "../../global/themeContext";
+import { darkTheme, lightTheme } from "../../global/themas";
 
 type IconComponent =
   | React.ComponentType<React.ComponentProps<typeof MaterialCommunityIcons>>
@@ -44,6 +45,10 @@ export const Input = forwardRef(
       ...rest
     } = props;
 
+    const { dark, fontScale } = useTheme();
+    const colors = dark ? darkTheme : lightTheme;
+    const style = createStyle(colors, fontScale);
+
     const calculateSizeWidht = () => {
       if (IconLeft && IconRight) return "80%";
       if (IconLeft || IconRight) return "90%";
@@ -59,18 +64,13 @@ export const Input = forwardRef(
       <View style={style.containerInput}>
         {title && <Text style={style.titleInput}>{title}</Text>}
 
-        <View
-          style={[
-            style.boxInput,
-            { paddingLeft: calculateSizePaddingLeft() },
-          ]}
-        >
+        <View style={[style.boxInput, { paddingLeft: calculateSizePaddingLeft() }]}>
           {IconLeft && iconLeftName && (
             <TouchableOpacity onPress={onIconLeftPress}>
               <IconLeft
                 name={iconLeftName as any}
                 size={20}
-                color={themas.colors.yellow}
+                color={colors.yellow}
                 style={style.icon}
               />
             </TouchableOpacity>
@@ -79,6 +79,7 @@ export const Input = forwardRef(
           <TextInput
             ref={ref}
             style={[style.input, { width: calculateSizeWidht() }]}
+            placeholderTextColor={colors.textFaint}
             {...rest}
           />
 
@@ -87,7 +88,7 @@ export const Input = forwardRef(
               <IconRight
                 name={iconRightName as any}
                 size={20}
-                color={themas.colors.yellow}
+                color={colors.yellow}
                 style={style.icon}
               />
             </TouchableOpacity>

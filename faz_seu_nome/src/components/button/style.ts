@@ -3,25 +3,22 @@ import { themas } from "../../global/themas";
 
 export const style = StyleSheet.create({
   button: {
-    width: 200,
-    height: 50,
+    width: "100%",
+    height: 54,
     alignItems: "center",
     justifyContent: "center",
     backgroundColor: themas.colors.yellow,
-    borderRadius: 40,
-    shadowColor: "#000",
-    shadowOffset: {
-      width: 0,
-      height: 10,
-    },
-    shadowOpacity: 0.51,
-    shadowRadius: 13.16,
-
-    elevation: 20,
+    borderRadius: 16,
+    shadowColor: themas.colors.yellow,
+    shadowOffset: { width: 0, height: 6 },
+    shadowOpacity: 0.5,
+    shadowRadius: 16,
+    elevation: 14,
   },
-  textButton:{
-    fontSize:16,
-    color:"black",
-    fontWeight:"bold",
-  }
+  textButton: {
+    fontSize: 16,
+    color: "#000000",
+    fontWeight: "800",
+    letterSpacing: 0.6,
+  },
 });

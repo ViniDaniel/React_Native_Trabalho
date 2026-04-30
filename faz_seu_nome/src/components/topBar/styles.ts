@@ -5,16 +5,20 @@ export const createStyle = (colors: any, fontScale: number = 1.0) => {
   const fs = fontSizes(fontScale);
 
   return StyleSheet.create({
-    header: {
-      marginBottom: 32,
-      marginTop: 20,
+    container: {
+      position: "absolute",
+      top: 25,
+      left: 20,
+      right: 20,
+      zIndex: 10,
+      flexDirection: "row",
+      alignItems: "center",
+      gap: 8,
     },
 
+    // Empurra tema para a direita, mantém os outros à esquerda
     themeButton: {
-      position: "absolute",
-      top: 0,
-      right: 0,
-      zIndex: 10,
+      marginLeft: "auto", // último item gruda na direita
       width: 38,
       height: 38,
       borderRadius: 19,
@@ -26,10 +30,6 @@ export const createStyle = (colors: any, fontScale: number = 1.0) => {
     },
 
     fontScaleButtons: {
-      position: "absolute",
-      top: 0,
-      left: 0,
-      zIndex: 10,
       flexDirection: "row",
       gap: 8,
     },
@@ -52,43 +52,14 @@ export const createStyle = (colors: any, fontScale: number = 1.0) => {
     },
 
     backButton: {
-      width: 40,
-      height: 40,
-      borderRadius: 20,
+      width: 38,
+      height: 38,
+      borderRadius: 19,
       backgroundColor: colors.yellowTint,
       alignItems: "center",
       justifyContent: "center",
-      marginBottom: 20,
-    },
-
-    text: {
-      fontWeight: "800",
-      fontSize: fs.xxl,
-      color: colors.text,
-      letterSpacing: 0.4,
-    },
-
-    subtitle: {
-      fontSize: fs.sm,
-      color: colors.textMuted,
-      marginTop: 6,
-      letterSpacing: 0.2,
-    },
-
-    boxCadastro: {
-      width: "100%",
-      gap: 4,
-      marginBottom: 28,
-    },
-
-    boxButton: {
-      width: "100%",
-      marginTop: 32,
-      gap: 14,
-    },
-
-    touchButton: {
-      alignItems: "center",
+      borderWidth: 1,
+      borderColor: colors.yellowBorder,
     },
   });
 };

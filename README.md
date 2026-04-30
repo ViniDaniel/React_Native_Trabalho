@@ -7,7 +7,7 @@
 * Busca e Filtragem de Produtos ✅
 * Conclusões de vendas 
 * Envio de E-mail 
-* Alerta de estoque baixo
+* Alerta de estoque baixo✅
 * Alerta de meta de vendas
 * Dashboard de vendas
 * Cadastro de clientes✅
@@ -19,7 +19,7 @@
 * Criação de senhas ✅
 * Tela de login ✅
 * Mostruário de produtos ✅
-* Aumento de acessibilidade visual (lupa)
+* Aumento de acessibilidade visual (lupa)✅
 * Armazenamento no celular ✅
 * Notificação para o cliente
 * Sistema fará consultas no banco dados ✅
@@ -28,20 +28,20 @@
 
 # Não Funcionais 
 
-* Sistema fluído 
-* Fácil Usabilidade
+* Sistema fluído ✅
+* Fácil Usabilidade✅
 * Sistema Seguro ✅
-* Sistema Otimizado 
-* Uso Prático 
+* Sistema Otimizado ✅
+* Uso Prático ✅
 * Sistema Compatível com Sistema Android ✅
 * Sistema Responsivo ✅
 * Conexão estável com o banco de dados ✅
 * Atualização continua do sistema ✅
 * Envio criptografado de e-mail
 * Criptografia de senha e dados sensíveis ✅
-* Possibilidade de aumentar e diminuir tamanho da fonte
-* Interface intuitiva
-* Tempo de resposta otimizado
+* Possibilidade de aumentar e diminuir tamanho da fonte✅
+* Interface intuitiva✅
+* Tempo de resposta otimizado✅
 * Baixo consumo de bateria ✅
 * Baixo consumo de dados móveis ✅
 * Compatibilidade com diferentes versões do android ✅

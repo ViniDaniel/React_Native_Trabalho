@@ -1,4 +1,4 @@
-import { Alert, Text, View } from "react-native";
+import { Alert, Text, View, TouchableOpacity, ScrollView, KeyboardAvoidingView, Platform } from "react-native";
 import { Input } from "../../components/input";
 import { Button } from "../../components/button";
 import { Button2 } from "../../components/button2";
@@ -7,9 +7,13 @@ import { editarCliente } from "../../service/clienteService";
 import { getClienteById } from "../../database/clienteRepository";
 import { useNavigation, useRoute, RouteProp } from "@react-navigation/native";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
-import { style } from "./style";
 import { RootStackParamList } from "../../routes/types";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
+import { useTheme } from "../../global/themeContext";
+import { darkTheme, lightTheme } from "../../global/themas";
+import { createStyle } from "./style";
+import { TopBar } from "../../components/topBar";
+
 
 export default function EditarCliente() {
   type NavigationProps = NativeStackNavigationProp<RootStackParamList, "EditarCliente">;
@@ -18,6 +22,10 @@ export default function EditarCliente() {
   const navigation = useNavigation<NavigationProps>();
   const route = useRoute<RouteProps>();
   const { id } = route.params;
+
+  const { dark, fontScale } = useTheme();
+  const colors = dark ? darkTheme : lightTheme;
+  const style = createStyle(colors, fontScale);
 
   const [nome, setNome] = useState("");
   const [email, setEmail] = useState("");
@@ -65,7 +73,7 @@ export default function EditarCliente() {
       setLoading(true);
       await editarCliente(id, nome, email, celular.replace(/\D/g, ""));
       Alert.alert("Sucesso", "Cliente atualizado com sucesso!", [
-        { text: "OK", onPress: () => navigation.goBack() }
+        { text: "OK", onPress: () => navigation.goBack() },
       ]);
     } catch (err: any) {
       console.log("ERRO:", err.message);
@@ -76,43 +84,61 @@ export default function EditarCliente() {
   };
 
   return (
-    <View style={style.container}>
-      <Text style={style.text}> Editar Cliente </Text>
-      <View style={style.boxCadastro}>
-        <Input
-          title="Nome do Cliente"
-          value={nome}
-          onChangeText={setNome}
-          IconRight={MaterialCommunityIcons}
-          iconRightName="account"
-          error={erros.nome}
-        />
-        <Input
-          title="E-mail"
-          value={email}
-          onChangeText={setEmail}
-          keyboardType="email-address"
-          autoCapitalize="none"
-          IconRight={MaterialCommunityIcons}
-          iconRightName="email-outline"
-          error={erros.email}
-        />
-        <Input
-          title="Celular"
-          value={celular}
-          onChangeText={(text) => setCelular(formatarCelular(text))}
-          keyboardType="phone-pad"
-          IconRight={MaterialCommunityIcons}
-          iconRightName="phone-outline"
-          error={erros.celular}
-        />
-      </View>
-      <View style={style.boxButton}>
-        <Button text="Salvar Alterações" onPress={handleAtualizar} loading={loading} />
-        <View style={style.touchButton}>
-          <Button2 text="Cancelar" onPress={() => navigation.goBack()} />
+    <KeyboardAvoidingView
+      style={{ flex: 1, backgroundColor: colors.background }}
+      behavior={Platform.OS === "ios" ? "padding" : undefined}
+    >
+      <TopBar onBack={() =>  navigation.goBack()} />
+      <ScrollView
+        contentContainerStyle={{ paddingHorizontal: 28, paddingTop: 64, paddingBottom: 40 }}
+        showsVerticalScrollIndicator={false}
+        keyboardShouldPersistTaps="handled"
+      >
+        
+
+        <View style={style.header}>
+          <Text style={style.text}>Editar Cliente</Text>
+          <Text style={style.subtitle}>Atualize os dados do cliente</Text>
         </View>
-      </View>
-    </View>
+
+        <View style={style.boxCadastro}>
+          <Input
+            title="Nome do Cliente"
+            value={nome}
+            onChangeText={setNome}
+            IconRight={MaterialCommunityIcons}
+            iconRightName="account"
+            error={erros.nome}
+          />
+          <Input
+            title="E-mail"
+            value={email}
+            onChangeText={setEmail}
+            keyboardType="email-address"
+            autoCapitalize="none"
+            IconRight={MaterialCommunityIcons}
+            iconRightName="email-outline"
+            error={erros.email}
+          />
+          <Input
+            title="Celular"
+            value={celular}
+            onChangeText={(text) => setCelular(formatarCelular(text))}
+            keyboardType="phone-pad"
+            IconRight={MaterialCommunityIcons}
+            iconRightName="phone-outline"
+            error={erros.celular}
+          />
+        </View>
+
+        <View style={style.boxButton}>
+          <Button text="Salvar Alterações" onPress={handleAtualizar} loading={loading} />
+          <View style={style.touchButton}>
+            <Button2 text="Cancelar" onPress={() => navigation.goBack()} />
+          </View>
+        </View>
+
+      </ScrollView>
+    </KeyboardAvoidingView>
   );
 }

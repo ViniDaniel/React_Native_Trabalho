@@ -3,24 +3,19 @@ import { themas } from "../../global/themas";
 
 export const style = StyleSheet.create({
   button: {
-    width: 100,
-    height: 20,
+    paddingHorizontal: 28,
+    height: 44,
     alignItems: "center",
     justifyContent: "center",
-    backgroundColor: "#FFDBBB",
-    borderRadius: 10,
-    shadowColor: "#a55252",
-    shadowOffset: {
-      width: 0,
-      height: 1,
-    },
-    shadowOpacity: 0.22,
-    shadowRadius: 2.22,
-
-    elevation: 3,
+    backgroundColor: "transparent",
+    borderRadius: 14,
+    borderWidth: 1.5,
+    borderColor: themas.colors.yellow,
   },
   textButton: {
     fontSize: 14,
-    color: "black",
+    color: themas.colors.yellow,
+    fontWeight: "600",
+    letterSpacing: 0.3,
   },
 });

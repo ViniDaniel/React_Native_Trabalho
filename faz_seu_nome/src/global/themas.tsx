@@ -1,6 +1,67 @@
+export const darkTheme = {
+  background:   "#0D0D0D",
+  surface:      "#1A1A1A",
+  surface2:     "#222222",
+  card:         "#1E1E1E",
+  text:         "#FFFFFF",
+  textMuted:    "#9A9A9A",
+  textFaint:    "#444444",
+  border:       "#2A2A2A",
+  yellow:       "#FFD600",
+  yellowTint:   "rgba(255, 214, 0, 0.10)",
+  yellowBorder: "rgba(255, 214, 0, 0.25)",
+  error:        "#FF4D4D",
+  errorTint:    "rgba(255, 77, 77, 0.10)",
+  errorBorder:  "rgba(255, 77, 77, 0.25)",
+  success:      "#4CAF50",
+};
+
+export const lightTheme = {
+  background:   "#F5F5F5",
+  surface:      "#FFFFFF",
+  surface2:     "#F0F0F0",
+  card:         "#FFFFFF",
+  text:         "#0D0D0D",
+  textMuted:    "#666666",
+  textFaint:    "#AAAAAA",
+  border:       "#E0E0E0",
+  yellow:       "#BFA000",
+  yellowTint:   "rgba(191, 160, 0, 0.10)",
+  yellowBorder: "rgba(191, 160, 0, 0.25)",
+  error:        "#CC0000",
+  errorTint:    "rgba(204, 0, 0, 0.10)",
+  errorBorder:  "rgba(204, 0, 0, 0.25)",
+  success:      "#2E7D32",
+};
+
+// Tamanhos base — serão multiplicados pelo fontScale
+export const fontSizes = (scale: number) => ({
+  xs:    Math.round(11 * scale),
+  sm:    Math.round(13 * scale),
+  md:    Math.round(15 * scale),
+  base:  Math.round(16 * scale),
+  lg:    Math.round(18 * scale),
+  xl:    Math.round(22 * scale),
+  xxl:   Math.round(28 * scale),
+});
+
+// Adiciona isso no final do themas.ts — compatibilidade com imports antigos
 export const themas = {
-    colors:{
-        lightGray:"#d7d8d7",
-        yellow:"yellow"
-    }
-}
+  colors: {
+    yellow:       "#FFD600",
+    yellowDark:   "#BFA000",
+    yellowGlow:   "rgba(255, 214, 0, 0.22)",
+    background:   "#0D0D0D",
+    surface:      "#1A1A1A",
+    surface2:     "#222222",
+    card:         "#1E1E1E",
+    white:        "#FFFFFF",
+    text:         "#FFFFFF",
+    textMuted:    "#9A9A9A",
+    textFaint:    "#444444",
+    lightGray:    "#1E1E1E",
+    error:        "#FF4D4D",
+    success:      "#4CAF50",
+    border:       "#2A2A2A",
+  },
+};
