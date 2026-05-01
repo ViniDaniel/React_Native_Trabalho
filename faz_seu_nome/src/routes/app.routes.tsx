@@ -7,6 +7,9 @@ import Clientes from "../pages/clientes";
 import EditarCliente from "../pages/editarCliente";
 import EditarProduto from "../pages/editarProduto";
 import Venda  from "../pages/venda";
+import HistoricoCliente from "../pages/historicoCliente";
+import DetalhesVenda from "../pages/detalhesVenda";
+
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
@@ -20,6 +23,8 @@ export function AppRoutes() {
       <Stack.Screen name="EditarCliente" component={EditarCliente} />
       <Stack.Screen name="EditarProduto" component={EditarProduto} />
       <Stack.Screen name="Venda" component={Venda} />
+      <Stack.Screen name="HistoricoCliente" component={HistoricoCliente} />
+      <Stack.Screen name="DetalhesVenda" component={DetalhesVenda} />
     </Stack.Navigator>
   );
 }

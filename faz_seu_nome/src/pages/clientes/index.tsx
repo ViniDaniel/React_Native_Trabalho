@@ -1,3 +1,5 @@
+//clientes
+
 import {
   Alert,
   Text,
@@ -147,6 +149,26 @@ export default function Clientes() {
                     color="#FFFFFF"
                   />
                   <Text style={style.deleteButtonText}>Excluir</Text>
+                </Pressable>
+                <Pressable
+                  style={({ pressed }) => [
+                    style.actionButton,
+                    style.historyButton,
+                    pressed && style.pressedButton,
+                  ]}
+                  onPress={() =>
+                    navigation.navigate("HistoricoCliente", {
+                      clienteId: c.id,
+                      clienteNome: c.nome,
+                    })
+                  }
+                >
+                  <MaterialCommunityIcons
+                    name="history"
+                    size={18}
+                    color={colors.text}
+                  />
+                  <Text style={style.historyButtonText}>Histórico</Text>
                 </Pressable>
               </View>
             </View>

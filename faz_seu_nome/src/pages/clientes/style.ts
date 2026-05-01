@@ -143,6 +143,18 @@ export const createStyle = (colors: any, fontScale: number = 1.0) => {
       fontSize: fs.sm,
     },
 
+    historyButton: {
+      backgroundColor: colors.yellowTint,
+      borderWidth: 1,
+      borderColor: colors.yellowBorder,
+    },
+    historyButtonText: {
+      fontSize: fs.sm,
+      color: colors.yellow,
+      fontWeight: "600",
+      marginLeft: 4,
+    },
+
     searchInput: {
       backgroundColor: colors.surface,
       borderRadius: 10,

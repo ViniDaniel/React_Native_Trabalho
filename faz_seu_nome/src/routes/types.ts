@@ -7,6 +7,8 @@ export type RootStackParamList = {
   CadastrarCliente: undefined;
   Clientes: undefined;
   EditarCliente: { id: number };
-  EditarProduto: {id: number};
+  EditarProduto: { id: number };
   Venda: undefined;
+  HistoricoCliente: { clienteId: number; clienteNome: string };
+  DetalhesVenda: { vendaId: number; clienteId: number };
 };
