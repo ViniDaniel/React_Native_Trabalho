@@ -14,6 +14,7 @@ import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { useTheme } from "../../global/themeContext";
 import { darkTheme, lightTheme } from "../../global/themas";
 import { TopBar } from "../../components/topBar";
+import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 
 export default function CadastrarProduto() {
   const { dark, fontScale } = useTheme();
@@ -71,16 +72,17 @@ export default function CadastrarProduto() {
   };
 
   return (
-    <KeyboardAvoidingView
+       <KeyboardAwareScrollView
       style={{ flex: 1, backgroundColor: colors.background }}
-      behavior={Platform.OS === "ios" ? "padding" : undefined}
+      contentContainerStyle={{ paddingHorizontal: 28, paddingTop: 64, paddingBottom: 40 }}
+      showsVerticalScrollIndicator={false}
+      keyboardShouldPersistTaps="handled"
+      enableOnAndroid={true}        // ← chave para Android funcionar
+      extraScrollHeight={80}        // ← espaço extra acima do teclado
+      enableAutomaticScroll={true}  // ← rola automaticamente até o input focado
     >
       <TopBar onBack={() =>  navigation.goBack()} />
-      <ScrollView
-        contentContainerStyle={{ paddingHorizontal: 28, paddingTop: 64, paddingBottom: 40 }}
-        showsVerticalScrollIndicator={false}
-        keyboardShouldPersistTaps="handled"
-      >
+
         
         <View style={style.header}>
           <Text style={style.text}>Cadastrar Produto</Text>
@@ -131,7 +133,6 @@ export default function CadastrarProduto() {
           </View>
         </View>
 
-      </ScrollView>
-    </KeyboardAvoidingView>
+      </KeyboardAwareScrollView>
   );
 }

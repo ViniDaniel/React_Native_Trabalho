@@ -23,6 +23,7 @@ import { getAllClientes, insertCliente } from "../../database/clienteRepository"
 import { getAllProdutos } from "../../database/produtoRepository";
 import { criarVenda } from "../../service/vendaService";
 import { AuthContext } from "../../context/authContext";
+import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 
 // ─── Tipos locais ────────────────────────────────────────────────────────────
 
@@ -303,7 +304,14 @@ const executarVenda = async (forcar: boolean) => {
   // ─── Render ───────────────────────────────────────────────────────────────
 
   return (
-    <View style={{ flex: 1, backgroundColor: colors.background }}>
+       <KeyboardAwareScrollView
+      style={{ flex: 1, backgroundColor: colors.background }}
+      showsVerticalScrollIndicator={false}
+      keyboardShouldPersistTaps="handled"
+      enableOnAndroid={true}        // ← chave para Android funcionar
+      extraScrollHeight={80}        // ← espaço extra acima do teclado
+      enableAutomaticScroll={true}  // ← rola automaticamente até o input focado
+    >
       <TopBar onBack={() => navigation.goBack()} scrollY={scrollY} />
 
       <Animated.ScrollView
@@ -636,6 +644,6 @@ const executarVenda = async (forcar: boolean) => {
           </Pressable>
         </View>
       </Animated.ScrollView>
-    </View>
+    </KeyboardAwareScrollView>
   );
 }

@@ -16,9 +16,11 @@ export const createStyle = (colors: any, fontScale: number = 1.0) => {
       gap: 8,
     },
 
-    // Empurra tema para a direita, mantém os outros à esquerda
+    spacer: {
+      flex: 1, // ← empurra tudo depois dele para a direita
+    },
+
     themeButton: {
-      marginLeft: "auto", // último item gruda na direita
       width: 38,
       height: 38,
       borderRadius: 19,

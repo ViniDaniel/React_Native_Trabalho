@@ -17,6 +17,7 @@ import { StatusBar } from "expo-status-bar";
 import { useTheme } from "../../global/themeContext";
 import { darkTheme, lightTheme } from "../../global/themas";
 import { TopBar } from "../../components/topBar"; // ← 
+import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 
 
 export default function Login() {
@@ -46,8 +47,15 @@ export default function Login() {
   };
 
   return (
-    <View style={style.container}>
-      <StatusBar style={dark ? "light" : "dark"} />
+    <KeyboardAwareScrollView
+      style={{ flex: 1, backgroundColor: colors.background }}
+      contentContainerStyle={{ paddingHorizontal: 28, paddingTop: 64, paddingBottom: 40 }}
+      showsVerticalScrollIndicator={false}
+      keyboardShouldPersistTaps="handled"
+      enableOnAndroid={true}        // ← chave para Android funcionar
+      extraScrollHeight={80}        // ← espaço extra acima do teclado
+      enableAutomaticScroll={true}  // ← rola automaticamente até o input focado
+    >
 
       <TopBar />
 
@@ -105,6 +113,6 @@ export default function Login() {
           onPress={() => navigation.navigate("TestDB")}
         />
       </View>
-    </View>
+    </KeyboardAwareScrollView>
   );
 }

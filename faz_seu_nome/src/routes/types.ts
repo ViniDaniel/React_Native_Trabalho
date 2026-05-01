@@ -11,4 +11,5 @@ export type RootStackParamList = {
   Venda: undefined;
   HistoricoCliente: { clienteId: number; clienteNome: string };
   DetalhesVenda: { vendaId: number; clienteId: number };
+  Dashboard: undefined;
 };

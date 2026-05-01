@@ -41,3 +41,25 @@ export async function getVendasByCliente(cliente_id: number) {
     [cliente_id],
   );
 }
+
+// Soma total por dia em um intervalo — para o gráfico de linhas
+export async function getVendasPorDia(dataInicio: string, dataFim: string) {
+  const db = await getDB();
+  return await db.getAllAsync(
+    `SELECT data, SUM(total) AS total_dia
+     FROM vendas
+     WHERE data BETWEEN ? AND ?
+     GROUP BY data
+     ORDER BY data ASC`,
+    [dataInicio, dataFim]
+  ) as any[];
+}
+
+export async function getTotalPeriodo(dataInicio: string, dataFim: string) {
+  const db = await getDB();
+  const row = await db.getFirstAsync(
+    `SELECT SUM(total) AS total FROM vendas WHERE data BETWEEN ? AND ?`,
+    [dataInicio, dataFim]
+  ) as any;
+  return row?.total ?? 0;
+}

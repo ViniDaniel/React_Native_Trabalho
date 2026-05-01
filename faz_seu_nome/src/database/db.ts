@@ -1,24 +1,22 @@
 import * as SQLite from "expo-sqlite";
 
-let db: SQLite.SQLiteDatabase
+let db: SQLite.SQLiteDatabase;
 
 export async function getDB() {
-    if(!db){
-        db = await SQLite.openDatabaseAsync("users.db")
+  if (!db) {
+    db = await SQLite.openDatabaseAsync("users.db");
 
-        await db.execAsync("PRAGMA foreign_keys = ON;");
-    }
+    await db.execAsync("PRAGMA foreign_keys = ON;");
+  }
   return db;
 }
 
-
 export async function createTables() {
-  
-    const db = await getDB()
-    
-    //await db.execAsync(`DROP TABLE IF EXISTS produtos;`);
+  const db = await getDB();
 
-    await db.execAsync(`
+  //await db.execAsync(`DROP TABLE IF EXISTS produtos;`);
+
+  await db.execAsync(`
         CREATE TABLE IF NOT EXISTS users (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             nome TEXT NOT NULL,
@@ -60,5 +58,10 @@ export async function createTables() {
             FOREIGN KEY (venda_id) REFERENCES vendas(id),
             FOREIGN KEY (produto_id) REFERENCES produtos(id)
         );
+        CREATE TABLE IF NOT EXISTS metas (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            mes TEXT NOT NULL UNIQUE,  -- formato "YYYY-MM"
+            valor REAL NOT NULL
+);
   `);
 }

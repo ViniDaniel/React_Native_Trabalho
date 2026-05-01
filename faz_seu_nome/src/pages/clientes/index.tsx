@@ -76,7 +76,8 @@ export default function Clientes() {
 
   return (
     <View style={{ flex: 1 }}>
-      <TopBar scrollY={scrollY} />
+      <TopBar onBack={() => navigation.goBack()} onPress={() => navigation.navigate("CadastrarCliente")}
+      onPressIcon="account-multiple-plus" scrollY={scrollY} />
       <Animated.ScrollView // ← Animated.ScrollView
         style={style.container}
         contentContainerStyle={style.contentContainer}
@@ -180,9 +181,6 @@ export default function Clientes() {
             text="Cadastrar Cliente"
             onPress={() => navigation.navigate("CadastrarCliente")}
           />
-          <View style={style.touchButton}>
-            <Button2 text="Voltar" onPress={() => navigation.goBack()} />
-          </View>
         </View>
       </Animated.ScrollView>
     </View>

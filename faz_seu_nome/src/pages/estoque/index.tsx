@@ -116,7 +116,7 @@ export default function Estoque() {
 
   return (
      <View style={{ flex: 1 }}>
-      <TopBar scrollY={scrollY} />
+      <TopBar onBack={() => navigation.goBack()} onPress={() => navigation.navigate("CadastrarProduto")} onPressIcon="package-variant-plus" scrollY={scrollY} />
     <Animated.ScrollView // ← Animated.ScrollView
         style={style.container}
         contentContainerStyle={style.contentContainer}
@@ -263,14 +263,7 @@ export default function Estoque() {
           text="Cadastrar Produto"
           onPress={() => navigation.navigate("CadastrarProduto")}
         />
-        <Button
-          text="Cadastrar Cliente"
-          onPress={() => navigation.navigate("CadastrarCliente")}
-        />
-        <Button text="Clientes" onPress={() => navigation.navigate("Clientes")} />
-          <Button text="Venda" onPress={() => navigation.navigate("Venda")} />
-        <Button text="Sair" onPress={logout} />
-      </View>
+        </View>
      </Animated.ScrollView>
     </View>
   );

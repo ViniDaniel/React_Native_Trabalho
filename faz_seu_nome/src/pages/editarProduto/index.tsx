@@ -21,6 +21,7 @@ import { useTheme } from "../../global/themeContext";
 import { darkTheme, lightTheme } from "../../global/themas";
 import { createStyle } from "./style";
 import { TopBar } from "../../components/topBar";
+import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 
 export default function EditarProduto() {
   type NavigationProps = NativeStackNavigationProp<
@@ -103,20 +104,17 @@ export default function EditarProduto() {
   };
 
   return (
-    <KeyboardAvoidingView
+       <KeyboardAwareScrollView
       style={{ flex: 1, backgroundColor: colors.background }}
-      behavior={Platform.OS === "ios" ? "padding" : undefined}
+      contentContainerStyle={{ paddingHorizontal: 28, paddingTop: 64, paddingBottom: 40 }}
+      showsVerticalScrollIndicator={false}
+      keyboardShouldPersistTaps="handled"
+      enableOnAndroid={true}        // ← chave para Android funcionar
+      extraScrollHeight={80}        // ← espaço extra acima do teclado
+      enableAutomaticScroll={true}  // ← rola automaticamente até o input focado
     >
       <TopBar onBack={() =>  navigation.goBack()} />
-      <ScrollView
-        contentContainerStyle={{
-          paddingHorizontal: 28,
-          paddingTop: 64,
-          paddingBottom: 40,
-        }}
-        showsVerticalScrollIndicator={false}
-        keyboardShouldPersistTaps="handled"
-      >
+     
 
         <View style={style.header}>
           <Text style={style.text}>Editar Produto</Text>
@@ -170,7 +168,6 @@ export default function EditarProduto() {
             <Button2 text="Cancelar" onPress={() => navigation.goBack()} />
           </View>
         </View>
-      </ScrollView>
-    </KeyboardAvoidingView>
+      </KeyboardAwareScrollView>
   );
 }

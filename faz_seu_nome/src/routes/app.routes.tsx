@@ -9,6 +9,7 @@ import EditarProduto from "../pages/editarProduto";
 import Venda  from "../pages/venda";
 import HistoricoCliente from "../pages/historicoCliente";
 import DetalhesVenda from "../pages/detalhesVenda";
+import Dashboard from "../pages/dashboard";
 
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
@@ -16,6 +17,7 @@ const Stack = createNativeStackNavigator<RootStackParamList>();
 export function AppRoutes() {
   return (
     <Stack.Navigator>
+      <Stack.Screen name="Dashboard" component={Dashboard} />
       <Stack.Screen name="Estoque" component={Estoque} />
       <Stack.Screen name="CadastrarProduto" component={CadastrarProduto} />
       <Stack.Screen name="CadastrarCliente" component={CadastrarCliente} />
