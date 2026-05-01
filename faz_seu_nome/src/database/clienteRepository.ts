@@ -1,3 +1,4 @@
+//clienteRepository
 import { getDB } from "./db";
 
 export async function insertCliente(
@@ -42,6 +43,10 @@ export async function updateCliente(
 
 export async function deleteCliente(id:number) {
   const db = await getDB()
+    await db.runAsync(
+    "UPDATE vendas SET cliente_id = NULL WHERE cliente_id = ?", [id]
+  );
+  
   await db.runAsync(
     "DELETE FROM clientes WHERE id = ?", [id]
   )

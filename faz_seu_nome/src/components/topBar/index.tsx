@@ -1,4 +1,6 @@
 import { View, Text, TouchableOpacity, Animated } from "react-native";
+// ↑ não precisa importar useMemo do react-native, vem do react mesmo
+import { useRef, useMemo } from "react";  // ← adicionar
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { useTheme } from "../../global/themeContext";
 import { darkTheme, lightTheme } from "../../global/themas";
@@ -6,7 +8,7 @@ import { createStyle } from "./styles";
 
 type TopBarProps = {
   onBack?: () => void;
-  scrollY?: Animated.Value; // ← opcional
+  scrollY?: Animated.Value;
 };
 
 export function TopBar({ onBack, scrollY }: TopBarProps) {
@@ -14,14 +16,17 @@ export function TopBar({ onBack, scrollY }: TopBarProps) {
   const colors = dark ? darkTheme : lightTheme;
   const style = createStyle(colors, fontScale);
 
-  // Se scrollY existir, anima. Se não, fica sempre visível
-  const opacity = scrollY
-    ? Animated.diffClamp(scrollY, 0, 80).interpolate({
-        inputRange: [0, 80],
-        outputRange: [1, 0],
-        extrapolate: "clamp",
-      })
-    : new Animated.Value(1); // ← sempre visível quando não tem scroll
+  // ✅ Valor estático estabilizado — não recria a cada render
+  const staticOpacity = useRef(new Animated.Value(1)).current;
+
+  const opacity = useMemo(() => {
+    if (!scrollY) return staticOpacity;
+    return Animated.diffClamp(scrollY, 0, 80).interpolate({
+      inputRange: [0, 80],
+      outputRange: [1, 0],
+      extrapolate: "clamp",
+    });
+  }, [scrollY]);  // só recalcula se scrollY mudar
 
   return (
     <Animated.View style={[style.container, { opacity }]}>

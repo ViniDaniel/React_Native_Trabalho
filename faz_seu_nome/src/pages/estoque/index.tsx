@@ -1,3 +1,4 @@
+
 import {
   Alert,
   Text,
@@ -65,7 +66,7 @@ export default function Estoque() {
   }, [produtos]);
 
   const getStatusEstoque = (quantidade: number) => {
-    if (quantidade === 0) {
+    if (quantidade <= 0) {
       return {
         text: "Sem estoque",
         badgeStyle: style.badgeDanger,
@@ -267,6 +268,7 @@ export default function Estoque() {
           onPress={() => navigation.navigate("CadastrarCliente")}
         />
         <Button text="Clientes" onPress={() => navigation.navigate("Clientes")} />
+          <Button text="Venda" onPress={() => navigation.navigate("Venda")} />
         <Button text="Sair" onPress={logout} />
       </View>
      </Animated.ScrollView>

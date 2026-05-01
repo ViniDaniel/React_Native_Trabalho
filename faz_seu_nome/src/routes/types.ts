@@ -8,4 +8,5 @@ export type RootStackParamList = {
   Clientes: undefined;
   EditarCliente: { id: number };
   EditarProduto: {id: number};
+  Venda: undefined;
 };

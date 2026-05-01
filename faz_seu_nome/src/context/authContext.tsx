@@ -1,28 +1,29 @@
 import { createContext, useState, useEffect, ReactNode } from "react";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { AuthUser } from "../types/user";
 
 type AuthContextData = {
-    user: string | null;
-    login: () => Promise<void>;
+    user: AuthUser | null;
+    login: (user: AuthUser) => Promise<void>;
     logout: () => Promise<void>;
 }
 
 export const AuthContext = createContext({} as AuthContextData)
 
 export function AuthProvider({children}: {children: ReactNode}){
-    const [user, setUser] = useState<string | null>(null)
+    const [user, setUser] = useState<AuthUser | null>(null)
 
     useEffect(() => {
         async function loadUser() {
-            const storedUser = await AsyncStorage.getItem("user");
-            setUser(storedUser)
+            const stored = await AsyncStorage.getItem("user");
+            if (stored) setUser(JSON.parse(stored))
         }
         loadUser()
     }, [])
     
-    async function login() {
-        await AsyncStorage.setItem("user", "logado");
-        setUser("logado")
+    async function login(user: AuthUser) {
+        await AsyncStorage.setItem("user", JSON.stringify(user));
+        setUser(user)
 
         
     }

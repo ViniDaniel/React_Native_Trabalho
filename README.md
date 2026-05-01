@@ -5,8 +5,8 @@
 
 * Controle de estoque ✅
 * Busca e Filtragem de Produtos ✅
-* Conclusões de vendas 
-* Envio de E-mail 
+* Conclusões de vendas ✅
+* Envio de E-mail ✅
 * Alerta de estoque baixo✅
 * Alerta de meta de vendas
 * Dashboard de vendas
@@ -21,7 +21,7 @@
 * Mostruário de produtos ✅
 * Aumento de acessibilidade visual (lupa)✅
 * Armazenamento no celular ✅
-* Notificação para o cliente
+* Notificação para o cliente✅
 * Sistema fará consultas no banco dados ✅
 
 
@@ -37,7 +37,7 @@
 * Sistema Responsivo ✅
 * Conexão estável com o banco de dados ✅
 * Atualização continua do sistema ✅
-* Envio criptografado de e-mail
+* Envio criptografado de e-mail✅
 * Criptografia de senha e dados sensíveis ✅
 * Possibilidade de aumentar e diminuir tamanho da fonte✅
 * Interface intuitiva✅
@@ -46,5 +46,5 @@
 * Baixo consumo de dados móveis ✅
 * Compatibilidade com diferentes versões do android ✅
 * Proteção contra acesso não autorizado ✅
-* Sistema deve garantir o envio do e-mail 
+* Sistema deve garantir o envio do e-mail ✅
 * O sistema deve usar SQlite para armazenamento no celular ✅

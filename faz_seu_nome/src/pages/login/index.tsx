@@ -36,8 +36,8 @@ export default function Login() {
   const handlelogin = async () => {
     try {
       setLoading(true);
-      await loginUser(email, password);
-      await login();
+      const user = await loginUser(email, password)
+      await login(user);
     } catch (err: any) {
       Alert.alert("Erro", err.message || "Erro ao fazer login");
     } finally {

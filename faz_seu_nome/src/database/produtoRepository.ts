@@ -41,7 +41,7 @@ export async function updateProduto(
   quantidade: number,
   valor: number,
 ) {
-  if (!nome || !marca || quantidade < 0 || valor < 0) {
+  if (!nome || !marca || valor < 0) {
     throw new Error("Dados inválidos");
   }
     const db = await getDB();

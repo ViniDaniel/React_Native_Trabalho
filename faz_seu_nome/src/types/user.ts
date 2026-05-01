@@ -5,3 +5,9 @@ export type User = {
   email: string;
   password: string;
 };
+
+export type AuthUser = {
+  id: number;
+  nome: string;
+  email: string;
+};

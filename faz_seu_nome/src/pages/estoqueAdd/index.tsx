@@ -1,6 +1,6 @@
 //tela de adição de produtos
 
-import { Alert, Text, View, TouchableOpacity, ScrollView, KeyboardAvoidingView, Platform } from "react-native";
+import { Alert, Text, View, ScrollView, KeyboardAvoidingView, Platform } from "react-native";
 import { Input } from "../../components/input";
 import { Button } from "../../components/button";
 import { Button2 } from "../../components/button2";
