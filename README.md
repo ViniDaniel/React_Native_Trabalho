@@ -51,3 +51,32 @@
 * Proteção contra acesso não autorizado ✅
 * Sistema deve garantir o envio do e-mail ✅
 * O sistema deve usar SQlite para armazenamento no celular ✅
+
+
+
+# PARA RODAR O APLICATIVO EM SEU ANDROID
+
+• Para Instalar as dependencias rode:
+
+* 1° npm install
+* 2° npm install -g explo-cli
+* 3° npx expo run:andoid
+
+• Após instaladas rode:
+* npx expo start
+
+
+
+
+
+# SOBRE O APLICATIVO
+
+'''Aplicativo nativo intitulado "FAZ SEU NOME", que tem como objetivo auxiliar varejistas, autônomos e quaisquer usuários que se sintam à vontade para utilizá-lo a trabalhar de forma organizada, estabelecendo metas, realizando o controle de estoque e possibilitando a emissão de uma nota simples enviada ao e-mail do cliente referente à compra efetuada. Além disso, permite manter o histórico de cada cliente para eventuais compras futuras.
+
+O aplicativo também foi desenvolvido com o intuito de atender aos requisitos da disciplina de Aplicativos Nativos, orientada pelo professor Lucas Nascimento.  
+
+    Alunos: Vinícius Daniel (Programador)
+            Rony Santos (Programador)
+            Ubirajara Cunha (Teste e Análises)
+            Jonas Ananias (Teste e Análises)
+'''
