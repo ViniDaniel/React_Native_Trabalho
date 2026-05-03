@@ -14,6 +14,7 @@ export type NotaVenda = {
   dataVenda: string;
   itens: ItemNota[];
   total: number;
+  desconto?: number;
   nomeVendedor: string;
 };
 
@@ -36,6 +37,11 @@ function gerarCorpoEmail(nota: NotaVenda): string {
         `• ${item.produto_nome} - QTD: ${item.quantidade} X R$ ${item.valor.toFixed(2)} === R$ ${(item.quantidade * item.valor).toFixed(2)}`,
     )
     .join("\n");
+
+  const linhaDesconto =
+    nota.desconto && nota.desconto > 0
+      ? `\nDesconto aplicado: - R$ ${nota.desconto.toFixed(2)}\n`
+      : "";
 
   const linhaCpf =
     nota.clienteCpf && nota.clienteCpf !== "00000000000"
@@ -61,6 +67,7 @@ function gerarCorpoEmail(nota: NotaVenda): string {
     `-----------------------------------------------------------------------\n\n` +
     `Segue a nota da sua compra realizada em ${linhaData}:\n\n` +
     `${linhasItens}\n\n` +
+    `${linhaDesconto}\n\n` +
     `Total: R$ ${nota.total.toFixed(2)}\n\n` +
     `-----------------------------------------------------------------------\n\n` +
     `Obrigado pela preferência!\n\n` +

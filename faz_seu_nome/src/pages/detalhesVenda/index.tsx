@@ -79,6 +79,7 @@ export default function DetalhesVenda() {
                   valor: i.valor,
                 })),
                 total: venda.total,
+                desconto: venda.desconto,
                 nomeVendedor: user?.nome ?? "Vendedor",
               });
               Alert.alert("Sucesso", "Nota reenviada com sucesso!");
@@ -156,6 +157,11 @@ export default function DetalhesVenda() {
           </View>
         ))}
 
+        {/* Desconto */}
+         <View style={style.descontoCard}>
+          <Text style={style.descontoLabel}>Desconto</Text>
+          <Text style={style.descontoValor}>{formatarMoeda(venda.desconto)}</Text>
+        </View>
         {/* Total */}
         <View style={style.totalCard}>
           <Text style={style.totalLabel}>Total</Text>

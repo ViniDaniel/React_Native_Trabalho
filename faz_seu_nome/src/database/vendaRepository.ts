@@ -1,6 +1,6 @@
 import { getDB} from "./db";
 
-export async function insertVenda(cliente_id:number, data:string, total:number) {
+export async function insertVenda(cliente_id:number, data:string, total:number, desconto:number = 0) {
     if(!data || total < 0){
         throw new Error("Dados inválidos")
     }
@@ -8,8 +8,8 @@ export async function insertVenda(cliente_id:number, data:string, total:number) 
     const db = await getDB()
 
     const result = await db.runAsync(
-        "INSERT INTO vendas (cliente_id, data, total) VALUES (?, ?, ?)",
-        [cliente_id, data, total],
+        "INSERT INTO vendas (cliente_id, data, total, desconto) VALUES (?, ?, ?, ?)",
+        [cliente_id, data, total, desconto],
     )
     return result.lastInsertRowId
 }

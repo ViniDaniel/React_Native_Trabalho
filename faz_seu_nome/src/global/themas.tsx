@@ -11,10 +11,14 @@ export const darkTheme = {
   yellow:       "#FFD600",
   yellowTint:   "rgba(255, 214, 0, 0.10)",
   yellowBorder: "rgba(255, 214, 0, 0.25)",
+  blue:         "#007cc4",
+  blueBorder:   "rgba(4, 226, 255, 0.25)",
   error:        "#FF4D4D",
   errorTint:    "rgba(255, 77, 77, 0.10)",
   errorBorder:  "rgba(255, 77, 77, 0.25)",
   success:      "#4CAF50",
+  warning:      "#FFA000",
+  warningTint:  "rgba(255, 160, 0, 0.10)"
 };
 
 export const lightTheme = {
@@ -29,10 +33,14 @@ export const lightTheme = {
   yellow:       "#BFA000",
   yellowTint:   "rgba(191, 160, 0, 0.10)",
   yellowBorder: "rgba(191, 160, 0, 0.25)",
+  blue:         "#003fb4",
+  blueBorder:   "rgba(0, 141, 160, 0.98)",
   error:        "#CC0000",
   errorTint:    "rgba(204, 0, 0, 0.10)",
   errorBorder:  "rgba(204, 0, 0, 0.25)",
   success:      "#2E7D32",
+  warning:      "#E65100",
+  warningTint:  "rgba(230, 81, 0, 0.10)",
 };
 
 // Tamanhos base — serão multiplicados pelo fontScale

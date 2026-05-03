@@ -10,6 +10,7 @@ import type { ItemVendaInput } from "./itemVendaService";
 export type CriarVendaInput = {
     cliente_id: number;
     itens: ItemVendaInput[];
+    desconto?: number;
     enviarEmail?: boolean;
     nomeVendedor?: string;
 }
@@ -32,7 +33,7 @@ export class ErroEstoqueInsuficiente extends Error {
 }
 
 export async function criarVenda(input: CriarVendaInput, forcarVenda = false) {
-    const {cliente_id, itens, enviarEmail = false, nomeVendedor = ""} = input;
+    const {cliente_id, itens, desconto = 0, enviarEmail = false, nomeVendedor = ""} = input;
 
     if(!itens || itens.length === 0){
         throw new Error("A venda deve ter pelo menos um item");
@@ -60,13 +61,15 @@ export async function criarVenda(input: CriarVendaInput, forcarVenda = false) {
     throw new ErroEstoqueInsuficiente(problemas);
   }
 
-    const total = itens.reduce(
+    const subtotal = itens.reduce(
         (soma, item) => soma + item.quantidade * item.valor, 0,
     );
 
+    const total = Math.max(subtotal - desconto, 0)
+
     const data = new Date().toISOString().split("T")[0]
 
-    const venda_id = await insertVenda(cliente_id, data, total)
+    const venda_id = await insertVenda(cliente_id, data, total, desconto)
 
   // Insere os itens e atualiza estoque
     for (const item of itens){
@@ -98,6 +101,7 @@ export async function criarVenda(input: CriarVendaInput, forcarVenda = false) {
                 valor: i.valor,
             })),
             total,
+            desconto,
             nomeVendedor,
         })
     }

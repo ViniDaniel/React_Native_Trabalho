@@ -71,6 +71,29 @@ export function createStyle(colors: any, fontScale: number) {
       marginTop: 2,
     },
 
+    descontoCard: {
+      flexDirection: "row",
+      justifyContent: "space-between",
+      alignItems: "center",
+      backgroundColor: colors.surface,
+      borderRadius: 12,
+      borderWidth: 1,
+      borderColor: colors.blueBorder,
+      padding: 16,
+      marginTop: 8,
+      marginBottom: 24,
+    },
+    descontoLabel: {
+      fontSize: fs.base,
+      color: colors.textMuted,
+      fontWeight: "600",
+    },
+    descontoValor: {
+      fontSize: fs.xl,
+      fontWeight: "800",
+      color: colors.blue,
+    },
+
     totalCard: {
       flexDirection: "row",
       justifyContent: "space-between",

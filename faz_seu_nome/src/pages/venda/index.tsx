@@ -19,7 +19,10 @@ import { createStyle } from "./style";
 import { TopBar } from "../../components/topBar";
 import { RootStackParamList } from "../../routes/types";
 
-import { getAllClientes, insertCliente } from "../../database/clienteRepository";
+import {
+  getAllClientes,
+  insertCliente,
+} from "../../database/clienteRepository";
 import { getAllProdutos } from "../../database/produtoRepository";
 import { criarVenda } from "../../service/vendaService";
 import { AuthContext } from "../../context/authContext";
@@ -49,8 +52,8 @@ type ItemSelecionado = {
   valor: string;
   confirmado: boolean;
   editando: boolean;
-  semEstoque: boolean;       
-  estoqueAtual: number;      
+  semEstoque: boolean;
+  estoqueAtual: number;
 };
 
 const ID_CLIENTE_FANTASMA = -1;
@@ -70,7 +73,8 @@ export default function Venda() {
   // ── Estados de cliente ──
   const [clientes, setClientes] = useState<ClienteDB[]>([]);
   const [buscaCliente, setBuscaCliente] = useState("");
-  const [clienteSelecionado, setClienteSelecionado] = useState<ClienteDB | null>(null);
+  const [clienteSelecionado, setClienteSelecionado] =
+    useState<ClienteDB | null>(null);
   const [mostrarListaCliente, setMostrarListaCliente] = useState(false);
   const [semCadastro, setSemCadastro] = useState(false);
   const { user } = useContext(AuthContext);
@@ -79,7 +83,12 @@ export default function Venda() {
   const [produtos, setProdutos] = useState<ProdutoDB[]>([]);
   const [buscaProduto, setBuscaProduto] = useState("");
   const [mostrarListaProduto, setMostrarListaProduto] = useState(false);
-  const [itensSelecionados, setItensSelecionados] = useState<ItemSelecionado[]>([]);
+  const [itensSelecionados, setItensSelecionados] = useState<ItemSelecionado[]>(
+    [],
+  );
+  const [descontoAtivo, setDescontoAtivo] = useState(false);
+  const [inputDesconto, setInputDesconto] = useState("");
+  const [descontoAplicado, setDescontoAplicado] = useState(0);
 
   // ── Estado de envio ──
   const [enviarEmail, setEnviarEmail] = useState(false);
@@ -111,7 +120,7 @@ export default function Venda() {
   const clientesFiltrados = clientes.filter(
     (c) =>
       c.nome.toLowerCase().includes(buscaCliente.toLowerCase()) ||
-      c.cpf.includes(buscaCliente)
+      c.cpf.includes(buscaCliente),
   );
 
   const handleSelecionarCliente = (cliente: ClienteDB) => {
@@ -144,12 +153,12 @@ export default function Venda() {
   const produtosFiltrados = produtos.filter(
     (p) =>
       p.nome.toLowerCase().includes(buscaProduto.toLowerCase()) ||
-      p.marca.toLowerCase().includes(buscaProduto.toLowerCase())
+      p.marca.toLowerCase().includes(buscaProduto.toLowerCase()),
   );
 
   const handleSelecionarProduto = (produto: ProdutoDB) => {
     const jaSelecionado = itensSelecionados.some(
-      (i) => i.produto.id === produto.id
+      (i) => i.produto.id === produto.id,
     );
     if (jaSelecionado) {
       Alert.alert("Produto já adicionado", "Este produto já está na lista.");
@@ -164,7 +173,7 @@ export default function Venda() {
         confirmado: false,
         editando: false,
         semEstoque: produto.quantidade < 1,
-        estoqueAtual: produto.quantidade
+        estoqueAtual: produto.quantidade,
       },
     ]);
     setBuscaProduto("");
@@ -177,7 +186,10 @@ export default function Venda() {
     const val = parseMoeda(item.valor);
 
     if (!qtd || qtd <= 0) {
-      Alert.alert("Quantidade inválida", "Informe uma quantidade maior que zero.");
+      Alert.alert(
+        "Quantidade inválida",
+        "Informe uma quantidade maior que zero.",
+      );
       return;
     }
     if (val < 0) {
@@ -189,16 +201,18 @@ export default function Venda() {
 
     setItensSelecionados((prev) =>
       prev.map((it, i) =>
-        i === index ? { ...it, confirmado: true, editando: false, semEstoque } : it
-      )
+        i === index
+          ? { ...it, confirmado: true, editando: false, semEstoque }
+          : it,
+      ),
     );
   };
 
   const handleEditarItem = (index: number) => {
     setItensSelecionados((prev) =>
       prev.map((it, i) =>
-        i === index ? { ...it, confirmado: false, editando: true } : it
-      )
+        i === index ? { ...it, confirmado: false, editando: true } : it,
+      ),
     );
   };
 
@@ -209,10 +223,10 @@ export default function Venda() {
   const handleUpdateCampo = (
     index: number,
     campo: "quantidade" | "valor",
-    texto: string
+    texto: string,
   ) => {
     setItensSelecionados((prev) =>
-      prev.map((it, i) => (i === index ? { ...it, [campo]: texto } : it))
+      prev.map((it, i) => (i === index ? { ...it, [campo]: texto } : it)),
     );
   };
 
@@ -220,99 +234,153 @@ export default function Venda() {
 
   const totalVenda = itensSelecionados
     .filter((i) => i.confirmado)
-    .reduce((soma, i) => soma + parseInt(i.quantidade || "0") * parseMoeda(i.valor), 0);
+    .reduce(
+      (soma, i) => soma + parseInt(i.quantidade || "0") * parseMoeda(i.valor),
+      0,
+    );
 
   const itensConfirmados = itensSelecionados.filter((i) => i.confirmado);
 
   // ─── Confirmar Venda ──────────────────────────────────────────────────────
 
- const handleConfirmarVenda = async () => {
-  if (!clienteSelecionado) {
-    Alert.alert("Atenção", "Selecione um cliente ou marque 'Cliente sem cadastro'.");
-    return;
-  }
-  if (itensConfirmados.length === 0) {
-    Alert.alert("Atenção", "Adicione e confirme ao menos um produto.");
-    return;
-  }
-
-  // Checa se algum item confirmado tem estoque insuficiente
-  const itensComProblema = itensConfirmados.filter((i) => i.semEstoque);
-
-  if (itensComProblema.length > 0) {
-    const nomes = itensComProblema
-      .map((i) => `• ${i.produto.nome} (estoque: ${i.estoqueAtual} un.)`)
-      .join("\n");
-
-    Alert.alert(
-      "Estoque insuficiente",
-      `Os seguintes produtos não têm estoque suficiente:\n\n${nomes}\n\nDeseja confirmar a venda mesmo assim? O estoque ficará negativo.`,
-      [
-        { text: "Cancelar", style: "cancel" },
-        {
-          text: "Confirmar mesmo assim",
-          style: "destructive",
-          onPress: () => executarVenda(true),   // forcarVenda = true
-        },
-      ]
-    );
-    return;
-  }
-
-  await executarVenda(false);
-};
-
-// Extrai a lógica de execução para evitar duplicação
-const executarVenda = async (forcar: boolean) => {
-  setLoading(true);
-  try {
-    let cliente_id = clienteSelecionado!.id;
-
-    if (cliente_id === ID_CLIENTE_FANTASMA) {
-      const jaExiste = clientes.find(
-        (c) => c.nome === NOME_CLIENTE_FANTASMA && c.cpf === "00000000000"
+  const handleConfirmarVenda = async () => {
+    if (!clienteSelecionado) {
+      Alert.alert(
+        "Atenção",
+        "Selecione um cliente ou marque 'Cliente sem cadastro'.",
       );
-      cliente_id = jaExiste
-        ? jaExiste.id
-        : (await insertCliente(NOME_CLIENTE_FANTASMA, "00000000000", "", "")) as number;
+      return;
+    }
+    if (itensConfirmados.length === 0) {
+      Alert.alert("Atenção", "Adicione e confirme ao menos um produto.");
+      return;
     }
 
-    await criarVenda(
-      {
-        cliente_id,
-        itens: itensConfirmados.map((i) => ({
-          produto_id: i.produto.id,
-          quantidade: parseInt(i.quantidade),
-          valor: parseMoeda(i.valor),
-        })),
-        enviarEmail,
-        nomeVendedor: user?.nome ?? "Vendedor",
-      },
-      forcar   // ← false ou true dependendo da escolha do usuário
-    );
+    // Checa se algum item confirmado tem estoque insuficiente
+    const itensComProblema = itensConfirmados.filter((i) => i.semEstoque);
 
-    Alert.alert("Sucesso", "Venda registrada com sucesso!", [
-      { text: "OK", onPress: () => navigation.goBack() },
-    ]);
-  } catch (err: any) {
-    Alert.alert("Erro", err?.message || "Erro ao registrar venda.");
-  } finally {
-    setLoading(false);
+    if (itensComProblema.length > 0) {
+      const nomes = itensComProblema
+        .map((i) => `• ${i.produto.nome} (estoque: ${i.estoqueAtual} un.)`)
+        .join("\n");
+
+      Alert.alert(
+        "Estoque insuficiente",
+        `Os seguintes produtos não têm estoque suficiente:\n\n${nomes}\n\nDeseja confirmar a venda mesmo assim? O estoque ficará negativo.`,
+        [
+          { text: "Cancelar", style: "cancel" },
+          {
+            text: "Confirmar mesmo assim",
+            style: "destructive",
+            onPress: () => executarVenda(true), // forcarVenda = true
+          },
+        ],
+      );
+      return;
+    }
+
+    await executarVenda(false);
+  };
+
+  // Extrai a lógica de execução para evitar duplicação
+  const executarVenda = async (forcar: boolean) => {
+    setLoading(true);
+    try {
+      let cliente_id = clienteSelecionado!.id;
+
+      if (cliente_id === ID_CLIENTE_FANTASMA) {
+        const jaExiste = clientes.find(
+          (c) => c.nome === NOME_CLIENTE_FANTASMA && c.cpf === "00000000000",
+        );
+        cliente_id = jaExiste
+          ? jaExiste.id
+          : ((await insertCliente(
+              NOME_CLIENTE_FANTASMA,
+              "00000000000",
+              "",
+              "",
+            )) as number);
+      }
+
+      await criarVenda(
+        {
+          cliente_id,
+          itens: itensConfirmados.map((i) => ({
+            produto_id: i.produto.id,
+            quantidade: parseInt(i.quantidade),
+            valor: parseMoeda(i.valor),
+          })),
+          desconto: valorDesconto,
+          enviarEmail,
+          nomeVendedor: user?.nome ?? "Vendedor",
+        },
+        forcar, // ← false ou true dependendo da escolha do usuário
+      );
+
+      Alert.alert("Sucesso", "Venda registrada com sucesso!", [
+        { text: "OK", onPress: () => navigation.goBack() },
+      ]);
+    } catch (err: any) {
+      Alert.alert("Erro", err?.message || "Erro ao registrar venda.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const percentualDesconto = descontoAplicado;
+  const valorDesconto = (totalVenda * percentualDesconto) / 100;
+  const totalComDesconto = totalVenda - valorDesconto;
+
+  function aplicarDesconto() {
+    const valor = parseFloat(inputDesconto.replace(",", "."));
+    if (isNaN(valor) || valor < 0) {
+      Alert.alert("Desconto inválido", "Digite um valor entre 0 e 100.");
+      return;
+    }
+    if (valor > 100) {
+      Alert.alert("Desconto inválido", "O desconto não pode ultrapassar 100%.");
+      return;
+    }
+    if (valor > 10) {
+      Alert.alert(
+        "Desconto acima de 10%",
+        `Você está aplicando ${valor}% de desconto. \n\n Deseja aplicar mesmo assim?`,
+        [
+          { text: "Cancelar", style: "cancel" },
+          {
+            text: "Aplicar mesmo assim.",
+            style: "destructive",
+            onPress: () => setDescontoAplicado(valor),
+          },
+        ],
+      );
+      return;
+    }
+    setDescontoAplicado(valor);
   }
-};
+
+  function handleToggleDesconto(valor: boolean){
+    setDescontoAtivo(valor);
+    if(!valor){
+      setInputDesconto("")
+      setDescontoAplicado(0)
+    }
+  }
 
   // ─── Render ───────────────────────────────────────────────────────────────
 
   return (
-       <KeyboardAwareScrollView
+<View style={{flex: 1}}>
+    <TopBar onBack={() => navigation.goBack()} scrollY={scrollY} />
+    <KeyboardAwareScrollView
       style={{ flex: 1, backgroundColor: colors.background }}
       showsVerticalScrollIndicator={false}
       keyboardShouldPersistTaps="handled"
-      enableOnAndroid={true}        // ← chave para Android funcionar
-      extraScrollHeight={80}        // ← espaço extra acima do teclado
-      enableAutomaticScroll={true}  // ← rola automaticamente até o input focado
+      enableOnAndroid={true} // ← chave para Android funcionar
+      extraScrollHeight={80} // ← espaço extra acima do teclado
+      enableAutomaticScroll={true} // ← rola automaticamente até o input focado
     >
-      <TopBar onBack={() => navigation.goBack()} scrollY={scrollY} />
+      
 
       <Animated.ScrollView
         style={style.container}
@@ -321,7 +389,7 @@ const executarVenda = async (forcar: boolean) => {
         keyboardShouldPersistTaps="handled"
         onScroll={Animated.event(
           [{ nativeEvent: { contentOffset: { y: scrollY } } }],
-          { useNativeDriver: true }
+          { useNativeDriver: true },
         )}
         scrollEventThrottle={16}
       >
@@ -336,7 +404,9 @@ const executarVenda = async (forcar: boolean) => {
         <Text style={style.sectionLabel}>Cliente</Text>
 
         {/* Barra de busca de cliente — desabilitada se semCadastro */}
-        <View style={[style.searchWrapper, semCadastro && style.searchDisabled]}>
+        <View
+          style={[style.searchWrapper, semCadastro && style.searchDisabled]}
+        >
           <MaterialCommunityIcons
             name="account-search-outline"
             size={20}
@@ -366,7 +436,11 @@ const executarVenda = async (forcar: boolean) => {
                 setBuscaCliente("");
               }}
             >
-              <MaterialCommunityIcons name="close" size={18} color={colors.textMuted} />
+              <MaterialCommunityIcons
+                name="close"
+                size={18}
+                color={colors.textMuted}
+              />
             </TouchableOpacity>
           )}
         </View>
@@ -399,7 +473,9 @@ const executarVenda = async (forcar: boolean) => {
               size={16}
               color={colors.yellow}
             />
-            <Text style={style.selectedPillText}>{clienteSelecionado.nome}</Text>
+            <Text style={style.selectedPillText}>
+              {clienteSelecionado.nome}
+            </Text>
           </View>
         )}
 
@@ -411,7 +487,11 @@ const executarVenda = async (forcar: boolean) => {
         >
           <View style={[style.checkbox, semCadastro && style.checkboxChecked]}>
             {semCadastro && (
-              <MaterialCommunityIcons name="check" size={14} color={colors.background} />
+              <MaterialCommunityIcons
+                name="check"
+                size={14}
+                color={colors.background}
+              />
             )}
           </View>
           <Text style={style.checkboxLabel}>Cliente sem cadastro</Text>
@@ -457,7 +537,8 @@ const executarVenda = async (forcar: boolean) => {
                 >
                   <Text style={style.dropdownItemTitle}>{p.nome}</Text>
                   <Text style={style.dropdownItemSub}>
-                    {p.marca} · Estoque: {p.quantidade} · {formatarMoeda(p.valor)}
+                    {p.marca} · Estoque: {p.quantidade} ·{" "}
+                    {formatarMoeda(p.valor)}
                   </Text>
                 </TouchableOpacity>
               ))
@@ -518,7 +599,13 @@ const executarVenda = async (forcar: boolean) => {
                         style={style.itemCampoInput}
                         keyboardType="numeric"
                         value={item.quantidade}
-                        onChangeText={(t) => handleUpdateCampo(index, "quantidade", t.replace(/[^0-9]/g, ""))}
+                        onChangeText={(t) =>
+                          handleUpdateCampo(
+                            index,
+                            "quantidade",
+                            t.replace(/[^0-9]/g, ""),
+                          )
+                        }
                         placeholderTextColor={colors.textMuted}
                         placeholder="0"
                         maxLength={4}
@@ -531,7 +618,9 @@ const executarVenda = async (forcar: boolean) => {
                         style={style.itemCampoInput}
                         keyboardType="decimal-pad"
                         value={item.valor}
-                        onChangeText={(t) => handleUpdateCampo(index, "valor", t)}
+                        onChangeText={(t) =>
+                          handleUpdateCampo(index, "valor", t)
+                        }
                         placeholderTextColor={colors.textMuted}
                         placeholder="0,00"
                         maxLength={10}
@@ -542,11 +631,14 @@ const executarVenda = async (forcar: boolean) => {
                   /* Resumo quando confirmado */
                   <View style={style.itemResumo}>
                     <Text style={style.itemResumoText}>
-                      {item.quantidade} un. × {" "}
+                      {item.quantidade} un. ×{" "}
                       {formatarMoeda(parseMoeda(item.valor))}
                     </Text>
                     <Text style={style.itemResumoTotal}>
-                      = {formatarMoeda(parseInt(item.quantidade) * parseMoeda(item.valor))}
+                      ={" "}
+                      {formatarMoeda(
+                        parseInt(item.quantidade) * parseMoeda(item.valor),
+                      )}
                     </Text>
                   </View>
                 )}
@@ -569,12 +661,90 @@ const executarVenda = async (forcar: boolean) => {
         )}
 
         {/* ── Total ── */}
-        {itensConfirmados.length > 0 && (
-          <View style={style.totalCard}>
-            <Text style={style.totalLabel}>Total da venda</Text>
-            <Text style={style.totalValor}>{formatarMoeda(totalVenda)}</Text>
+        {/* ── Desconto ── */}
+{itensConfirmados.length > 0 && (
+  <View style={style.descontoCard}>
+
+    {/* Checkbox de desconto */}
+    <TouchableOpacity
+      style={style.checkboxRow}
+      onPress={() => handleToggleDesconto(!descontoAtivo)}
+      activeOpacity={0.7}
+    >
+      <View style={[style.checkbox, descontoAtivo && style.checkboxChecked]}>
+        {descontoAtivo && (
+          <MaterialCommunityIcons name="check" size={14} color={colors.background} />
+        )}
+      </View>
+      <Text style={style.checkboxLabel}>Aplicar desconto</Text>
+    </TouchableOpacity>
+
+    {/* Input de desconto — aparece ao ativar */}
+    {descontoAtivo && (
+      <View style={style.descontoInputRow}>
+        <View style={style.descontoInputWrapper}>
+          <TextInput
+            style={style.descontoInput}
+            value={inputDesconto}
+            onChangeText={setInputDesconto}
+            keyboardType="decimal-pad"
+            placeholder="0"
+            placeholderTextColor={colors.textFaint}
+            maxLength={5}
+          />
+          <Text style={style.descontoSufixo}>%</Text>
+        </View>
+
+        <TouchableOpacity
+          style={style.descontoBtn}
+          onPress={aplicarDesconto}
+        >
+          <Text style={style.descontoBtnText}>Aplicar</Text>
+        </TouchableOpacity>
+
+        {/* Alerta visual se > 10% */}
+        {descontoAplicado > 10 && (
+          <View style={style.descontoAlerta}>
+            <MaterialCommunityIcons
+              name="alert-circle-outline"
+              size={14}
+              color={colors.warning}
+            />
+            <Text style={style.descontoAlertaText}>
+              Desconto acima de 10%
+            </Text>
           </View>
         )}
+      </View>
+    )}
+
+    {/* Linha de desconto aplicado */}
+    {descontoAplicado > 0 && (
+      <View style={style.descontoResumo}>
+        <Text style={style.descontoResumoLabel}>
+          Desconto ({descontoAplicado}%)
+        </Text>
+        <Text style={style.descontoResumoValor}>
+          − {formatarMoeda(valorDesconto)}
+        </Text>
+      </View>
+    )}
+  </View>
+)}
+
+{/* ── Total ── */}
+{itensConfirmados.length > 0 && (
+  <View style={style.totalCard}>
+    {descontoAplicado > 0 && (
+      <View style={style.totalSubtotalRow}>
+        <Text style={style.totalSubtotalLabel}>Subtotal</Text>
+        <Text style={style.totalSubtotalValor}>{formatarMoeda(totalVenda)}</Text>
+      </View>
+    )}
+    <Text style={style.totalLabel}>Total da venda</Text>
+    <Text style={style.totalValor}>{formatarMoeda(totalComDesconto)}</Text>
+  </View>
+)}
 
         {/* ══════════════════════════════════════════
             RODAPÉ: E-MAIL + BOTÃO
@@ -645,5 +815,6 @@ const executarVenda = async (forcar: boolean) => {
         </View>
       </Animated.ScrollView>
     </KeyboardAwareScrollView>
+    </View>
   );
 }
