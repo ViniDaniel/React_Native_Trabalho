@@ -125,6 +125,7 @@ export const createStyle = (colors: any, fontScale: number = 1.0) => {
       borderWidth: 1,
       borderColor: colors.border,
       marginBottom: 12,
+      overflow: "hidden", // ← adiciona
     },
     graficoHeader: {
       flexDirection: "row",

@@ -98,6 +98,7 @@ export default function Dashboard() {
     formatarDateInput(inicioMesAtual()),
   );
   const [inputFim, setInputFim] = useState(formatarDateInput(hoje()));
+  const [graficoWidth, setGraficoWidth] = useState(300);
 
   const [pontos, setPontos] = useState<
     { x: number; y: number; label: string }[]
@@ -109,18 +110,19 @@ export default function Dashboard() {
 
   // ── Carrega dados ─────────────────────────────────────────
   async function carregar() {
-  const [vendas, total, metaValor, produtos] = await Promise.all([
-    getVendasPorDia(dataInicio, dataFim),
-    getTotalPeriodo(dataInicio, dataFim),
-    getMeta(mesAtual()),
-    getAllProdutos(),                                          // ← adiciona
-  ]);
+    const [vendas, total, metaValor, produtos] = await Promise.all([
+      getVendasPorDia(dataInicio, dataFim),
+      getTotalPeriodo(dataInicio, dataFim),
+      getMeta(mesAtual()),
+      getAllProdutos(), // ← adiciona
+    ]);
 
-  setTotalPeriodo(total);
-  setMeta(metaValor);
-  setEstoqueCritico(                                          // ← adiciona
-    (produtos as any[]).some((p) => p.quantidade <= 0)
-  );
+    setTotalPeriodo(total);
+    setMeta(metaValor);
+    setEstoqueCritico(
+      // ← adiciona
+      (produtos as any[]).some((p) => p.quantidade <= 0),
+    );
 
     // Monta pontos acumulados dia a dia
     let acumulado = 0;
@@ -303,7 +305,10 @@ export default function Dashboard() {
         </View>
 
         {/* Gráfico */}
-        <View style={style.graficoCard}>
+        <View
+          style={style.graficoCard}
+          onLayout={(e) => setGraficoWidth(e.nativeEvent.layout.width)}
+        >
           <View style={style.graficoHeader}>
             <Text style={style.graficoTitulo}>Vendas acumuladas</Text>
             <View style={style.legendaRow}>
@@ -322,6 +327,7 @@ export default function Dashboard() {
 
           {pontos.length >= 2 ? (
             <VictoryChart
+              width={graficoWidth}
               height={200}
               padding={{ top: 20, bottom: 40, left: 50, right: 20 }}
               domainPadding={{ y: [10, 30] }}
@@ -371,31 +377,31 @@ export default function Dashboard() {
 
         <View style={style.atalhosGrid}>
           <Pressable
-  style={({ pressed }) => [
-    style.atalhoItem,
-    pressed && style.atalhoPressed,
-  ]}
-  onPress={() => navigation.navigate("Estoque")}
->
-  <View style={style.atalhoIconBox}>
-    <MaterialCommunityIcons
-      name="package-variant-closed"
-      size={28}
-      color={colors.yellow}
-    />
-    {/* Badge de alerta */}
-    {estoqueCritico && (
-      <View style={style.badgeAlerta}>
-        <MaterialCommunityIcons
-          name="exclamation-thick"
-          size={10}
-          color="#fff"
-        />
-      </View>
-    )}
-  </View>
-  <Text style={style.atalhoText}>Estoque</Text>
-</Pressable>
+            style={({ pressed }) => [
+              style.atalhoItem,
+              pressed && style.atalhoPressed,
+            ]}
+            onPress={() => navigation.navigate("Estoque")}
+          >
+            <View style={style.atalhoIconBox}>
+              <MaterialCommunityIcons
+                name="package-variant-closed"
+                size={28}
+                color={colors.yellow}
+              />
+              {/* Badge de alerta */}
+              {estoqueCritico && (
+                <View style={style.badgeAlerta}>
+                  <MaterialCommunityIcons
+                    name="exclamation-thick"
+                    size={10}
+                    color="#fff"
+                  />
+                </View>
+              )}
+            </View>
+            <Text style={style.atalhoText}>Estoque</Text>
+          </Pressable>
 
           <Pressable
             style={({ pressed }) => [
