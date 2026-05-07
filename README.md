@@ -59,8 +59,8 @@
 • Para Instalar as dependencias rode:
 
 * 1° npm install
-* 2° npm install -g explo-cli
-* 3° npx expo run:andoid
+* 2° npm install -g expo-cli
+* 3° npx expo run:android
 
 • Após instaladas rode:
 * npx expo start
