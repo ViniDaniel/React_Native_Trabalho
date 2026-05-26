@@ -117,7 +117,7 @@ export const createStyle = (colors: any, fontScale: number = 1.0) => {
       color: colors.yellow,
     },
 
-    // Card do gráfico
+
     graficoCard: {
       backgroundColor: colors.surface,
       borderRadius: 14,
@@ -125,7 +125,7 @@ export const createStyle = (colors: any, fontScale: number = 1.0) => {
       borderWidth: 1,
       borderColor: colors.border,
       marginBottom: 12,
-      overflow: "hidden", // ← adiciona
+      overflow: "hidden", 
     },
     graficoHeader: {
       flexDirection: "row",

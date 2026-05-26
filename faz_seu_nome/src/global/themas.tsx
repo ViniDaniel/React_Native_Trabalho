@@ -11,6 +11,9 @@ export const darkTheme = {
   yellow:       "#FFD600",
   yellowTint:   "rgba(255, 214, 0, 0.10)",
   yellowBorder: "rgba(255, 214, 0, 0.25)",
+  orange:       "#ff9100",
+  orangeTint:   "rgba(255, 136, 0, 0.1)",
+  orangeBorder: "rgba(255, 102, 0, 0.25)",
   blue:         "#007cc4",
   blueBorder:   "rgba(4, 226, 255, 0.25)",
   error:        "#FF4D4D",
@@ -33,6 +36,9 @@ export const lightTheme = {
   yellow:       "#BFA000",
   yellowTint:   "rgba(191, 160, 0, 0.10)",
   yellowBorder: "rgba(191, 160, 0, 0.25)",
+  orange:       "#da5700",
+  orangeTint:   "rgba(255, 153, 0, 0.12)",
+  orangeBorder: "rgba(255, 102, 0, 0.25)",
   blue:         "#003fb4",
   blueBorder:   "rgba(0, 141, 160, 0.98)",
   error:        "#CC0000",
@@ -43,7 +49,7 @@ export const lightTheme = {
   warningTint:  "rgba(230, 81, 0, 0.10)",
 };
 
-// Tamanhos base — serão multiplicados pelo fontScale
+
 export const fontSizes = (scale: number) => ({
   xs:    Math.round(11 * scale),
   sm:    Math.round(13 * scale),
@@ -54,7 +60,7 @@ export const fontSizes = (scale: number) => ({
   xxl:   Math.round(28 * scale),
 });
 
-// Adiciona isso no final do themas.ts — compatibilidade com imports antigos
+
 export const themas = {
   colors: {
     yellow:       "#FFD600",

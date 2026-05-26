@@ -47,7 +47,8 @@ export default function HistoricoCliente() {
 
   return (
     <View style={{ flex: 1, backgroundColor: colors.background }}>
-      <TopBar onBack={() => navigation.goBack()} scrollY={scrollY} />
+      <TopBar onBack={() => navigation.goBack()} onPress3={() => navigation.navigate("Dashboard")}
+        onPressIcon3="home" scrollY={scrollY} />
 
       <Animated.ScrollView
         style={style.container}

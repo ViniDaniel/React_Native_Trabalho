@@ -42,7 +42,7 @@ export async function getVendasByCliente(cliente_id: number) {
   );
 }
 
-// Soma total por dia em um intervalo — para o gráfico de linhas
+
 export async function getVendasPorDia(dataInicio: string, dataFim: string) {
   const db = await getDB();
   return await db.getAllAsync(

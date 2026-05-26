@@ -60,20 +60,20 @@ function parseInput(str: string): string | null {
   return `${match[3]}-${match[2]}-${match[1]}`;
 }
 function mascaraData(texto: string): string {
-  // Remove tudo que não for número
+
   const numeros = texto.replace(/\D/g, "");
 
   if (numeros.length <= 2) return numeros;
   if (numeros.length <= 4) return `${numeros.slice(0, 2)}/${numeros.slice(2)}`;
   return `${numeros.slice(0, 2)}/${numeros.slice(2, 4)}/${numeros.slice(4, 8)}`;
 }
-// ── Cor da linha baseada na meta ─────────────────────────────
+
 function corLinha(total: number, meta: number | null): string {
-  if (meta === null || meta === 0) return "#2196F3"; // azul — sem meta
+  if (meta === null || meta === 0) return "#2196F3"; 
   const pct = total / meta;
-  if (pct >= 1) return "#4CAF50"; // verde — bateu meta
-  if (pct >= 0.75) return "#FFD600"; // amarelo — próximo
-  return "#FF4D4D"; // vermelho — abaixo
+  if (pct >= 1) return "#4CAF50"; 
+  if (pct >= 0.75) return "#FFD600"; 
+  return "#FF4D4D"; 
 }
 
 export default function Dashboard() {

@@ -12,4 +12,5 @@ export type RootStackParamList = {
   HistoricoCliente: { clienteId: number; clienteNome: string };
   DetalhesVenda: { vendaId: number; clienteId: number };
   Dashboard: undefined;
+  ConfiguracaoEstoque: undefined;
 };

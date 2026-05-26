@@ -81,6 +81,14 @@ export const createStyle = (colors: any, fontScale: number = 1.0) => {
       gap: 10,
     },
 
+    viewCheck: {
+      flexDirection: "row",
+      alignItems: "center",
+      gap: 8,
+      marginTop: -8,
+      marginBottom: 8,
+    },
+
     boxButton: {
       width: "100%",
       marginTop: 20,

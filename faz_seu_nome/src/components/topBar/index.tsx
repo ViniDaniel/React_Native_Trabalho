@@ -10,14 +10,26 @@ type TopBarProps = {
   onPress?: () => void;
   onPressIcon?: keyof typeof MaterialCommunityIcons.glyphMap;
   onPressColor?: string;
+  onPress2?: () => void;
+  onPressIcon2?: keyof typeof MaterialCommunityIcons.glyphMap;
+  onPressColor2?: string;
+  onPress3?: () => void;
+  onPressIcon3?: keyof typeof MaterialCommunityIcons.glyphMap;
+  onPressColor3?: string;
   scrollY?: Animated.Value;
 };
 
 export function TopBar({
   onBack,
   onPress,
-  onPressIcon = "dots-vertical", // ← padrão se não passar nenhum
+  onPressIcon = "dots-vertical",
   onPressColor,
+  onPress2,
+  onPressIcon2 = "cog",
+  onPressColor2,
+  onPress3,
+  onPressIcon3 = "home",
+  onPressColor3,
   scrollY,
 }: TopBarProps) {
   const { dark, toggleTheme, fontScale, increaseFontScale, decreaseFontScale } =
@@ -25,7 +37,7 @@ export function TopBar({
   const colors = dark ? darkTheme : lightTheme;
   const style = createStyle(colors, fontScale);
 
-  // ✅ Valor estático estabilizado — não recria a cada render
+
   const staticOpacity = useRef(new Animated.Value(1)).current;
 
   const opacity = useMemo(() => {
@@ -35,11 +47,11 @@ export function TopBar({
       outputRange: [1, 0],
       extrapolate: "clamp",
     });
-  }, [scrollY]); // só recalcula se scrollY mudar
+  }, [scrollY]); 
 
   return (
     <Animated.View style={[style.container, { opacity }]}>
-      {/* Esquerda — botões opcionais */}
+     
       {onBack && (
         <TouchableOpacity style={style.backButton} onPress={onBack}>
           <MaterialCommunityIcons
@@ -60,7 +72,26 @@ export function TopBar({
         </TouchableOpacity>
       )}
 
-      {/* Spacer — empurra o grupo direito */}
+      {onPress2 && (
+        <TouchableOpacity style={style.backButton} onPress={onPress2}>
+          <MaterialCommunityIcons
+            name={onPressIcon2}
+            size={20}
+            color={onPressColor2 ?? colors.yellow}
+          />
+        </TouchableOpacity>
+      )}
+      {onPress3 && (
+        <TouchableOpacity style={style.backButton} onPress={onPress3}>
+          <MaterialCommunityIcons
+            name={onPressIcon3}
+            size={20}
+            color={onPressColor3 ?? colors.yellow}
+          />
+        </TouchableOpacity>
+      )}
+
+
       <View style={style.spacer} />
 
       <View style={style.fontScaleButtons}>

@@ -1,16 +1,21 @@
-import { cpf } from "cpf-cnpj-validator";
+import { cpf, cnpj } from "cpf-cnpj-validator";
 
 export function clienteValidation(
   nome: string,
   email: string,
   celular: string,
-  cpfValue?: string,
+  documentoValue?: string,
 ) {
   if (!nome || nome.trim().length < 1) {
     return "Nome do cliente inválido";
   }
-  if (cpfValue !== undefined && !cpf.isValid(cpfValue.trim())) {
-    return "CPF Inválido";
+  if (documentoValue !== undefined) {
+    const numeros = documentoValue.replace(/\D/g, "")
+    if (numeros.length <= 11){
+      if(!cpf.isValid(numeros)) return "CPF Inválido!";
+    } else {
+      if (!cnpj.isValid(numeros)) return "CNPJ Inválido!";
+    }
   }
   if (!email || !email.includes("@")) {
     return "E-mail inválido";

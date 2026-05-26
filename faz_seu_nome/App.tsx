@@ -4,6 +4,7 @@ import { createTables } from "./src/database/db";
 import { View, ActivityIndicator } from "react-native";
 import { AuthProvider } from "./src/context/authContext"; // <- adicione
 import { ThemeProvider } from "./src/global/themeContext";
+import { EstoqueConfigProvider } from "./src/context/estoqueConfigContext";
 
 export default function App() {
   const [dbReady, setDbReady] = useState(false);
@@ -27,7 +28,9 @@ export default function App() {
   return (
     <ThemeProvider>
       <AuthProvider>
+        <EstoqueConfigProvider>
         <Routes />
+        </EstoqueConfigProvider>
       </AuthProvider>
     </ThemeProvider>
   );

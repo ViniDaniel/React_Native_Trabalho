@@ -117,9 +117,9 @@ export default function CadastroUsuario() {
   contentContainerStyle={{ paddingHorizontal: 28, paddingTop: 64, paddingBottom: 40 }}
   showsVerticalScrollIndicator={false}
   keyboardShouldPersistTaps="handled"
-  enableOnAndroid={true}        // ← chave para Android funcionar
-  extraScrollHeight={80}        // ← espaço extra acima do teclado
-  enableAutomaticScroll={true}  // ← rola automaticamente até o input focado
+  enableOnAndroid={true}        
+  extraScrollHeight={80}        
+  enableAutomaticScroll={true}  
 >
 
 

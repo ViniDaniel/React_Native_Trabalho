@@ -1,5 +1,4 @@
 //vendaService
-
 import { insertVenda, getAllVendas, getVendaById, getVendasByCliente } from "../database/vendaRepository";
 import { insertItemVenda, getItensByVenda } from "../database/itemVendaRepository";
 import { getProdutoById, updateProduto } from "../database/produtoRepository";
@@ -71,7 +70,7 @@ export async function criarVenda(input: CriarVendaInput, forcarVenda = false) {
 
     const venda_id = await insertVenda(cliente_id, data, total, desconto)
 
-  // Insere os itens e atualiza estoque
+  
     for (const item of itens){
         await insertItemVenda(venda_id, item.produto_id, item.quantidade, item.valor);
         const produto = await getProdutoById(item.produto_id) as any;
@@ -92,8 +91,8 @@ export async function criarVenda(input: CriarVendaInput, forcarVenda = false) {
         await enviarNotaPorEmail({
             clienteNome: cliente.nome,
             clienteEmail: cliente.email,
-            clienteCpf: cliente.cpf,         // ← novo
-            clienteCelular: cliente.celular,  // ← novo
+            clienteDocumento: cliente.documento,
+            clienteCelular: cliente.celular,  
             dataVenda: data,
             itens: itensCompletos.map((i) => ({
                 produto_nome: i.produto_nome,

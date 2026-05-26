@@ -6,8 +6,6 @@ import {
   TextInput,
   Pressable,
   TouchableOpacity,
-  FlatList,
-  Switch,
 } from "react-native";
 import { useContext, useEffect, useRef, useState } from "react";
 import { useNavigation } from "expo-router";
@@ -18,7 +16,6 @@ import { darkTheme, lightTheme } from "../../global/themas";
 import { createStyle } from "./style";
 import { TopBar } from "../../components/topBar";
 import { RootStackParamList } from "../../routes/types";
-
 import {
   getAllClientes,
   insertCliente,
@@ -33,7 +30,7 @@ import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view
 type ClienteDB = {
   id: number;
   nome: string;
-  cpf: string;
+  documento: string;
   email: string;
   celular: string;
 };
@@ -120,7 +117,7 @@ export default function Venda() {
   const clientesFiltrados = clientes.filter(
     (c) =>
       c.nome.toLowerCase().includes(buscaCliente.toLowerCase()) ||
-      c.cpf.includes(buscaCliente),
+      c.documento.includes(buscaCliente),
   );
 
   const handleSelecionarCliente = (cliente: ClienteDB) => {
@@ -135,7 +132,7 @@ export default function Venda() {
       setClienteSelecionado({
         id: ID_CLIENTE_FANTASMA,
         nome: NOME_CLIENTE_FANTASMA,
-        cpf: "",
+        documento: "",
         email: "",
         celular: "",
       });
@@ -284,19 +281,21 @@ export default function Venda() {
 
   // Extrai a lógica de execução para evitar duplicação
   const executarVenda = async (forcar: boolean) => {
+     console.log("CLIENTE SELECIONADO:", JSON.stringify(clienteSelecionado));
     setLoading(true);
     try {
       let cliente_id = clienteSelecionado!.id;
 
       if (cliente_id === ID_CLIENTE_FANTASMA) {
         const jaExiste = clientes.find(
-          (c) => c.nome === NOME_CLIENTE_FANTASMA && c.cpf === "00000000000",
+          (c) => c.nome === NOME_CLIENTE_FANTASMA && c.documento === "00000000000",
         );
         cliente_id = jaExiste
           ? jaExiste.id
           : ((await insertCliente(
               NOME_CLIENTE_FANTASMA,
               "00000000000",
+              "PF",
               "",
               "",
             )) as number);
@@ -320,6 +319,7 @@ export default function Venda() {
       Alert.alert("Sucesso", "Venda registrada com sucesso!", [
         { text: "OK", onPress: () => navigation.goBack() },
       ]);
+      
     } catch (err: any) {
       Alert.alert("Erro", err?.message || "Erro ao registrar venda.");
     } finally {
@@ -458,7 +458,7 @@ export default function Venda() {
                   onPress={() => handleSelecionarCliente(c)}
                 >
                   <Text style={style.dropdownItemTitle}>{c.nome}</Text>
-                  <Text style={style.dropdownItemSub}>CPF: {c.cpf}</Text>
+                  <Text style={style.dropdownItemSub}>CPF: {c.documento}</Text>
                 </TouchableOpacity>
               ))
             )}
@@ -571,7 +571,7 @@ export default function Venda() {
                         style={[style.itemBtn, style.itemBtnConfirmar]}
                         onPress={() => handleConfirmarItem(index)}
                       >
-                        <Text style={style.itemBtnIcon}>✔️</Text>
+                        <Text style={style.itemBtnIcon}>✅</Text>
                       </TouchableOpacity>
                     ) : (
                       <TouchableOpacity

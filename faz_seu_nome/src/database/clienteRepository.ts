@@ -3,27 +3,28 @@ import { getDB } from "./db";
 
 export async function insertCliente(
   nome: string,
-  cpf: string,
+  documento: string,
+  tipo_pessoa: 'PF' | 'PJ',
   email: string,
   celular: string,
 ) {
   const db = await getDB();
   const result = await db.runAsync(
-    "INSERT INTO clientes (nome, cpf, email, celular) VALUES (?,?,?,?)",
-    [nome, cpf, email, celular]
+    "INSERT INTO clientes (nome, documento, tipo_pessoa, email, celular) VALUES (?,?,?,?,?)",
+    [nome, documento, tipo_pessoa, email, celular]
   );
   return result.lastInsertRowId;
 }
 
 export async function getAllClientes() {
   const db = await getDB();
-  return await db.getAllAsync("SELECT id, nome, cpf, email, celular FROM clientes");
+  return await db.getAllAsync("SELECT id, nome, documento, tipo_pessoa, email, celular FROM clientes");
 }
 
 export async function getClienteById(id: number) {
   const db = await getDB();
   return await db.getFirstAsync(
-    "SELECT id, nome, cpf, email, celular FROM clientes WHERE id = ?",
+    "SELECT id, nome, documento, tipo_pessoa, email, celular FROM clientes WHERE id = ?",
     [id]
   );
 }

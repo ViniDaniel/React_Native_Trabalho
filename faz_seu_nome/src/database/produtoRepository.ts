@@ -54,6 +54,14 @@ export async function updateProduto(
 
 export async function deleteProduto(id:number) {
   const db = await getDB()
+  const vinculo = await db.getFirstAsync(
+    "SELECT id FROM itens_venda WHERE produto_id = ? LIMIT 1",
+    [id]
+  ) as any;
+
+  if (vinculo) {
+    throw new Error("PRODUTO_COM_VENDAS");
+  }
   await db.runAsync(
     "DELETE FROM produtos WHERE id = ?", [id]
   )

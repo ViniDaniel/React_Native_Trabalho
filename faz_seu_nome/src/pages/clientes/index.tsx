@@ -10,7 +10,6 @@ import {
 } from "react-native";
 import { useEffect, useRef, useState } from "react";
 import { Button } from "../../components/button";
-import { Button2 } from "../../components/button2";
 import { useNavigation, useIsFocused } from "expo-router";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { RootStackParamList } from "../../routes/types";
@@ -48,10 +47,21 @@ export default function Clientes() {
     if (isFocused) fetchClientes();
   }, [isFocused]);
 
+  function formatarDocumento(doc: string): string {
+    if (doc.length === 11) {
+      return doc.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, "$1.$2.$3-$4");
+    }
+    return doc.replace(/(\d{2})(\d{3})(\d{3})(\d{4})(\d{2})/, "$1.$2.$3/$4-$5");
+  }
+
+  function formatarCelular(cel: string): string {
+    return cel.replace(/(\d{2})(\d{5})(\d{4})/, "($1) $2-$3");
+  }
+
   const clientesFiltrados = clientes.filter(
     (c) =>
       c.nome.toLowerCase().includes(busca.toLowerCase()) ||
-      c.cpf.toLowerCase().includes(busca.toLowerCase()) ||
+      c.documento.toLowerCase().includes(busca.toLowerCase()) ||
       c.email.toLowerCase().includes(busca.toLowerCase()) ||
       c.celular.toLowerCase().includes(busca.toLowerCase()),
   );
@@ -76,9 +86,15 @@ export default function Clientes() {
 
   return (
     <View style={{ flex: 1 }}>
-      <TopBar onBack={() => navigation.goBack()} onPress={() => navigation.navigate("CadastrarCliente")}
-      onPressIcon="account-multiple-plus" scrollY={scrollY} />
-      <Animated.ScrollView // ← Animated.ScrollView
+      <TopBar
+        onBack={() => navigation.goBack()}
+        onPress={() => navigation.navigate("CadastrarCliente")}
+        onPressIcon="account-multiple-plus"
+        onPress3={() => navigation.navigate("Dashboard")}
+        onPressIcon3="home"
+        scrollY={scrollY}
+      />
+      <Animated.ScrollView
         style={style.container}
         contentContainerStyle={style.contentContainer}
         showsVerticalScrollIndicator={false}
@@ -93,7 +109,7 @@ export default function Clientes() {
         </View>
         <TextInput
           style={style.searchInput}
-          placeholder="Buscar por nome, cpf, e-mail ou celular..."
+          placeholder="Buscar por nome, cpf, cnpj, e-mail ou celular..."
           placeholderTextColor={colors.textMuted}
           value={busca}
           onChangeText={setBusca}
@@ -108,13 +124,20 @@ export default function Clientes() {
                 Nome: <Text style={style.value}>{c.nome}</Text>
               </Text>
               <Text style={style.label}>
-                CPF: <Text style={style.value}>{c.cpf}</Text>
+                {c.documento?.length === 11 ? "CPF: " : "CNPJ: "}
+                <Text style={style.value}>
+                  {formatarDocumento(c.documento)}
+                </Text>
+              </Text>
+              <Text style={style.label}>
+                Tipo de Pessoa: <Text style={style.value}>{c.tipo_pessoa}</Text>
               </Text>
               <Text style={style.label}>
                 E-mail: <Text style={style.value}>{c.email}</Text>
               </Text>
               <Text style={style.label}>
-                Celular: <Text style={style.value}>{c.celular}</Text>
+                Celular:{" "}
+                <Text style={style.value}>{formatarCelular(c.celular)}</Text>
               </Text>
 
               <View style={style.actionsRow}>

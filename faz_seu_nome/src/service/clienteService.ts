@@ -5,14 +5,15 @@ import { clienteValidation } from "../validations/clienteValidation";
 
 export async function createCliente(
     nome: string,
-    cpf: string,
+    documento: string,
+    tipo_pessoa: 'PF' | 'PJ',
     email: string,
     celular: string,
 ) {
-    const error = clienteValidation(nome, email, celular, cpf);
+    const error = clienteValidation(nome, email, celular, documento);
     if (error) throw new Error(error);
 
-    await insertCliente(nome, cpf, email, celular);
+    await insertCliente(nome, documento, tipo_pessoa, email, celular);
 }
 
 export async function editarCliente(

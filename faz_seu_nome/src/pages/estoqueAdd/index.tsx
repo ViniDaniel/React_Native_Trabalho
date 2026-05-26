@@ -1,6 +1,6 @@
 //tela de adição de produtos
 
-import { Alert, Text, View, ScrollView, KeyboardAvoidingView, Platform } from "react-native";
+import { Alert, Text, View } from "react-native";
 import { Input } from "../../components/input";
 import { Button } from "../../components/button";
 import { Button2 } from "../../components/button2";
@@ -77,11 +77,12 @@ export default function CadastrarProduto() {
       contentContainerStyle={{ paddingHorizontal: 28, paddingTop: 64, paddingBottom: 40 }}
       showsVerticalScrollIndicator={false}
       keyboardShouldPersistTaps="handled"
-      enableOnAndroid={true}        // ← chave para Android funcionar
-      extraScrollHeight={80}        // ← espaço extra acima do teclado
-      enableAutomaticScroll={true}  // ← rola automaticamente até o input focado
+      enableOnAndroid={true}        
+      extraScrollHeight={80}        
+      enableAutomaticScroll={true}  
     >
-      <TopBar onBack={() =>  navigation.goBack()} />
+      <TopBar onBack={() =>  navigation.goBack()} onPress3={() => navigation.navigate("Dashboard")}
+        onPressIcon3="home" />
 
         
         <View style={style.header}>

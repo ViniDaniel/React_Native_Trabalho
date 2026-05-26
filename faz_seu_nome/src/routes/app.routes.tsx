@@ -10,6 +10,7 @@ import Venda  from "../pages/venda";
 import HistoricoCliente from "../pages/historicoCliente";
 import DetalhesVenda from "../pages/detalhesVenda";
 import Dashboard from "../pages/dashboard";
+import ConfiguracaoEstoque from "../pages/configEstoque";
 
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
@@ -27,6 +28,8 @@ export function AppRoutes() {
       <Stack.Screen name="Venda" component={Venda} />
       <Stack.Screen name="HistoricoCliente" component={HistoricoCliente} />
       <Stack.Screen name="DetalhesVenda" component={DetalhesVenda} />
+      <Stack.Screen name="ConfiguracaoEstoque" component={ConfiguracaoEstoque} />
+      
     </Stack.Navigator>
   );
 }

@@ -220,6 +220,15 @@ export const createStyle = (colors: any, fontScale: number = 1.0) => {
       color: colors.yellow,
     },
 
+        badgeCritical: {
+      backgroundColor: colors.orangeTint,
+      borderColor: colors.orangeBorder,
+    },
+
+    badgeCriticalText: {
+      color: colors.orange,
+    },
+
     badgeDanger: {
       backgroundColor: colors.errorTint,
       borderColor: colors.errorBorder,

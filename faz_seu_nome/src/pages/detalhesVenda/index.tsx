@@ -46,8 +46,8 @@ export default function DetalhesVenda() {
   useEffect(() => {
     async function fetchDados() {
       const [v, i, c] = await Promise.all([
-        getVendaById(Number(vendaId)), // ← busca a venda
-        getItensByVenda(Number(vendaId)), // ← busca os itens
+        getVendaById(Number(vendaId)),  
+        getItensByVenda(Number(vendaId)), 
         getClienteById(Number(clienteId)),
       ]);
       setVenda(v);
@@ -70,7 +70,7 @@ export default function DetalhesVenda() {
               await enviarNotaPorEmail({
                 clienteNome: cliente.nome,
                 clienteEmail: cliente.email,
-                clienteCpf: cliente.cpf,
+                clienteDocumento: cliente.documento,
                 clienteCelular: cliente.celular,
                 dataVenda: venda.data,
                 itens: itens.map((i) => ({
@@ -109,7 +109,8 @@ export default function DetalhesVenda() {
 
   return (
     <View style={{ flex: 1, backgroundColor: colors.background }}>
-      <TopBar onBack={() => navigation.goBack()} scrollY={scrollY} />
+      <TopBar onBack={() => navigation.goBack()} onPress3={() => navigation.navigate("Dashboard")}
+        onPressIcon3="home" scrollY={scrollY} />
 
       <Animated.ScrollView
         style={style.container}
@@ -121,7 +122,7 @@ export default function DetalhesVenda() {
         )}
         scrollEventThrottle={16}
       >
-        {/* Cabeçalho da venda */}
+         
         <View style={style.header}>
           <Text style={style.title}>
             Compra #{String(venda.id).padStart(4, "0")}
@@ -129,7 +130,7 @@ export default function DetalhesVenda() {
           <Text style={style.subtitle}>{formatarData(venda.data)}</Text>
         </View>
 
-        {/* Info do cliente */}
+        
         <View style={style.clienteCard}>
           <MaterialCommunityIcons
             name="account-outline"
@@ -139,7 +140,7 @@ export default function DetalhesVenda() {
           <Text style={style.clienteNome}>{cliente?.nome ?? "—"}</Text>
         </View>
 
-        {/* Itens */}
+        
         <Text style={style.sectionLabel}>Itens da compra</Text>
 
         {itens.map((item, index) => (
@@ -157,18 +158,18 @@ export default function DetalhesVenda() {
           </View>
         ))}
 
-        {/* Desconto */}
+        
          <View style={style.descontoCard}>
           <Text style={style.descontoLabel}>Desconto</Text>
           <Text style={style.descontoValor}>{formatarMoeda(venda.desconto)}</Text>
         </View>
-        {/* Total */}
+        
         <View style={style.totalCard}>
           <Text style={style.totalLabel}>Total</Text>
           <Text style={style.totalValor}>{formatarMoeda(venda.total)}</Text>
         </View>
 
-        {/* Botão reenviar e-mail */}
+        
         <Pressable
           style={({ pressed }) => [
             style.btnEmail,

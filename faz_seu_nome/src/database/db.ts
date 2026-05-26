@@ -14,7 +14,7 @@ export async function getDB() {
 export async function createTables() {
   const db = await getDB();
 
-  //await db.execAsync(`DROP TABLE IF EXISTS produtos;`);
+  //await db.execAsync(`DROP TABLE IF EXISTS clientes;`);
     //await db.execAsync(`ALTER TABLE vendas ADD COLUMN desconto REAL NOT NULL DEFAULT 0;`)
   await db.execAsync(`
         CREATE TABLE IF NOT EXISTS users (
@@ -35,10 +35,8 @@ export async function createTables() {
         CREATE TABLE IF NOT EXISTS clientes (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             nome TEXT NOT NULL,
-            cpf TEXT NOT NULL UNIQUE,
-            endereco TEXT,
-            cidade TEXT,
-            uf TEXT,
+            documento TEXT NOT NULL UNIQUE,
+            tipo_pessoa TEXT NOT NULL DEFAULT 'PF',
             celular TEXT,
             email TEXT NOT NULL UNIQUE
         );
