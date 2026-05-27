@@ -1,18 +1,28 @@
 //vendaService
-import { insertVenda, getAllVendas, getVendaById, getVendasByCliente } from "../database/vendaRepository";
-import { insertItemVenda, getItensByVenda } from "../database/itemVendaRepository";
+import {
+  insertVenda,
+  getAllVendas,
+  getVendaById,
+  getVendasByCliente,
+} from "../database/vendaRepository";
+import {
+  insertItemVenda,
+  getItensByVenda,
+} from "../database/itemVendaRepository";
 import { getProdutoById, updateProduto } from "../database/produtoRepository";
 import { getClienteById } from "../database/clienteRepository";
 import { enviarNotaPorEmail } from "./emailService";
 import type { ItemVendaInput } from "./itemVendaService";
+import { FormaPagamento } from "../types/pagamentos";
 
 export type CriarVendaInput = {
-    cliente_id: number;
-    itens: ItemVendaInput[];
-    desconto?: number;
-    enviarEmail?: boolean;
-    nomeVendedor?: string;
-}
+  cliente_id: number;
+  itens: ItemVendaInput[];
+  desconto?: number;
+  forma_pagamento?: FormaPagamento;
+  enviarEmail?: boolean;
+  nomeVendedor?: string;
+};
 export type EstoqueInsuficiente = {
   tipo: "ESTOQUE_INSUFICIENTE";
   produto_id: number;
@@ -32,94 +42,113 @@ export class ErroEstoqueInsuficiente extends Error {
 }
 
 export async function criarVenda(input: CriarVendaInput, forcarVenda = false) {
-    const {cliente_id, itens, desconto = 0, enviarEmail = false, nomeVendedor = ""} = input;
+  const {
+    cliente_id,
+    itens,
+    desconto = 0,
+    forma_pagamento = "Não Informado",
+    enviarEmail = false,
+    nomeVendedor = "",
+  } = input;
 
-    if(!itens || itens.length === 0){
-        throw new Error("A venda deve ter pelo menos um item");
+  if (!itens || itens.length === 0) {
+    throw new Error("A venda deve ter pelo menos um item");
+  }
+
+  const problemas: EstoqueInsuficiente[] = [];
+
+  for (const item of itens) {
+    const produto = (await getProdutoById(item.produto_id)) as any;
+    if (!produto) {
+      throw new Error(`Produto ID ${item.produto_id} não encontrado`);
     }
-
-    const problemas: EstoqueInsuficiente[] = []
-
-    for (const item of itens){
-        const produto = await getProdutoById(item.produto_id) as any;
-        if(!produto){
-            throw new Error(`Produto ID ${item.produto_id} não encontrado`);
-        }
-        if (produto.quantidade < item.quantidade){
-           problemas.push({
-            tipo: "ESTOQUE_INSUFICIENTE",
-            produto_id: produto.id,
-            produto_nome: produto.nome,
-            estoque_atual: produto.quantidade,
-            quantidade_pedida: item.quantidade,
-           }) 
-        }
+    if (produto.quantidade < item.quantidade) {
+      problemas.push({
+        tipo: "ESTOQUE_INSUFICIENTE",
+        produto_id: produto.id,
+        produto_nome: produto.nome,
+        estoque_atual: produto.quantidade,
+        quantidade_pedida: item.quantidade,
+      });
     }
+  }
 
-      if (problemas.length > 0 && !forcarVenda) {
+  if (problemas.length > 0 && !forcarVenda) {
     throw new ErroEstoqueInsuficiente(problemas);
   }
 
-    const subtotal = itens.reduce(
-        (soma, item) => soma + item.quantidade * item.valor, 0,
+  const subtotal = itens.reduce(
+    (soma, item) => soma + item.quantidade * item.valor,
+    0,
+  );
+
+  const total = Math.max(subtotal - desconto, 0);
+
+  const data = new Date().toISOString().split("T")[0];
+
+  const venda_id = await insertVenda(
+    cliente_id,
+    data,
+    total,
+    desconto,
+    forma_pagamento,
+  );
+
+  for (const item of itens) {
+    await insertItemVenda(
+      venda_id,
+      item.produto_id,
+      item.quantidade,
+      item.valor,
     );
+    const produto = (await getProdutoById(item.produto_id)) as any;
 
-    const total = Math.max(subtotal - desconto, 0)
+    await updateProduto(
+      item.produto_id,
+      produto.nome,
+      produto.marca,
+      produto.quantidade - item.quantidade,
+      produto.valor,
+    );
+  }
 
-    const data = new Date().toISOString().split("T")[0]
+  if (enviarEmail) {
+    const cliente = (await getClienteById(cliente_id)) as any;
+    const itensCompletos = (await getItensByVenda(venda_id)) as any[];
 
-    const venda_id = await insertVenda(cliente_id, data, total, desconto)
+    await enviarNotaPorEmail({
+      clienteNome: cliente.nome,
+      clienteEmail: cliente.email,
+      clienteDocumento: cliente.documento,
+      clienteCelular: cliente.celular,
+      dataVenda: data,
+      itens: itensCompletos.map((i) => ({
+        produto_nome: i.produto_nome,
+        quantidade: i.quantidade,
+        valor: i.valor,
+      })),
+      total,
+      desconto,
+      forma_pagamento,
+      nomeVendedor,
+    });
+  }
 
-  
-    for (const item of itens){
-        await insertItemVenda(venda_id, item.produto_id, item.quantidade, item.valor);
-        const produto = await getProdutoById(item.produto_id) as any;
-
-        await updateProduto(
-            item.produto_id,
-            produto.nome,
-            produto.marca,
-            produto.quantidade - item.quantidade,
-            produto.valor
-        )
-    }
-
-    if(enviarEmail) {
-        const cliente = await getClienteById(cliente_id) as any;
-        const itensCompletos = await getItensByVenda(venda_id) as any[];
-
-        await enviarNotaPorEmail({
-            clienteNome: cliente.nome,
-            clienteEmail: cliente.email,
-            clienteDocumento: cliente.documento,
-            clienteCelular: cliente.celular,  
-            dataVenda: data,
-            itens: itensCompletos.map((i) => ({
-                produto_nome: i.produto_nome,
-                quantidade: i.quantidade,
-                valor: i.valor,
-            })),
-            total,
-            desconto,
-            nomeVendedor,
-        })
-    }
-
-    return venda_id
+  return venda_id;
 }
 
 export async function listarVendas() {
-    return await getAllVendas()
+  return await getAllVendas();
 }
 
 export async function buscarVenda(id: number) {
-    const venda = await getVendaById(id)
+  const venda = await getVendaById(id);
 
-    if(!venda){
-        throw new Error("Venda não encontrada")
-    }
+  if (!venda) {
+    throw new Error("Venda não encontrada");
+  }
 
-    return venda
+  return venda;
 }
 
 export async function buscarVendasDoCliente(cliente_id: number) {

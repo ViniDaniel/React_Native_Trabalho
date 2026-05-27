@@ -11,7 +11,6 @@ import { useEffect, useRef, useState, useContext } from "react";
 import { useNavigation, useIsFocused } from "expo-router";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { RootStackParamList } from "../../routes/types";
-import { VictoryChart, VictoryLine, VictoryAxis } from "victory-native";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { useTheme } from "../../global/themeContext";
 import { darkTheme, lightTheme } from "../../global/themas";
@@ -24,6 +23,8 @@ import {
 import { getMeta, upsertMeta } from "../../database/metaRepository";
 import { AuthContext } from "../../context/authContext";
 import { getAllProdutos } from "../../database/produtoRepository";
+import { GraficoFormaPagamento } from "../../components/GraficoFormaPagamento";
+import { GraficoVendasLinha } from "../../components/GraficoVendasLinha";
 
 // ── Helpers de data ──────────────────────────────────────────
 function hoje(): string {
@@ -60,7 +61,6 @@ function parseInput(str: string): string | null {
   return `${match[3]}-${match[2]}-${match[1]}`;
 }
 function mascaraData(texto: string): string {
-
   const numeros = texto.replace(/\D/g, "");
 
   if (numeros.length <= 2) return numeros;
@@ -69,11 +69,11 @@ function mascaraData(texto: string): string {
 }
 
 function corLinha(total: number, meta: number | null): string {
-  if (meta === null || meta === 0) return "#2196F3"; 
+  if (meta === null || meta === 0) return "#2196F3";
   const pct = total / meta;
-  if (pct >= 1) return "#4CAF50"; 
-  if (pct >= 0.75) return "#FFD600"; 
-  return "#FF4D4D"; 
+  if (pct >= 1) return "#4CAF50";
+  if (pct >= 0.75) return "#FFD600";
+  return "#FF4D4D";
 }
 
 export default function Dashboard() {
@@ -90,7 +90,7 @@ export default function Dashboard() {
   const colors = dark ? darkTheme : lightTheme;
   const style = createStyle(colors, fontScale);
 
-  // ── Estados ──────────────────────────────────────────────
+  const [mostrarDashboard, setMostrarDashboard] = useState(true);
   const [estoqueCritico, setEstoqueCritico] = useState(false);
   const [dataInicio, setDataInicio] = useState(inicioMesAtual());
   const [dataFim, setDataFim] = useState(hoje());
@@ -98,7 +98,6 @@ export default function Dashboard() {
     formatarDateInput(inicioMesAtual()),
   );
   const [inputFim, setInputFim] = useState(formatarDateInput(hoje()));
-  const [graficoWidth, setGraficoWidth] = useState(300);
 
   const [pontos, setPontos] = useState<
     { x: number; y: number; label: string }[]
@@ -162,7 +161,9 @@ export default function Dashboard() {
     setDataInicio(inicio);
     setDataFim(fim);
   }
-
+  function toggleDashboard() {
+    setMostrarDashboard((prev) => !prev);
+  }
   function resetarParaMesAtual() {
     const inicio = inicioMesAtual();
     const fim = hoje();
@@ -209,167 +210,120 @@ export default function Dashboard() {
         <View style={style.header}>
           <Text style={style.title}>Dashboard</Text>
           <Text style={style.subtitle}>Acompanhe suas vendas</Text>
+          <Pressable style={style.toggleBtn} onPress={toggleDashboard}>
+            <Text style={style.toggleBtnText}>
+              {mostrarDashboard ? "Ocultar dashboard" : "Mostrar dashboard"}
+            </Text>
+          </Pressable>
         </View>
 
         {/* Cards de resumo */}
-        <View style={style.resumoRow}>
-          <View style={style.resumoCard}>
-            <Text style={style.resumoLabel}>Total no período</Text>
-            <Text style={[style.resumoValorDestaque, { color: corAtual }]}>
-              {totalFormatado}
-            </Text>
-          </View>
-          <View style={style.resumoCard}>
-            <Text style={style.resumoLabel}>Meta mensal</Text>
-            <Text style={style.resumoValor}>{metaFormatada}</Text>
-          </View>
-        </View>
-
-        {/* Card da meta com progress bar */}
-        <View style={style.metaCard}>
-          <View style={style.metaRow}>
-            <View>
-              <Text style={style.metaLabel}>Meta — {mesAtual()}</Text>
-              <Text style={[style.metaValor, { color: corAtual }]}>
-                {totalFormatado}
-                <Text style={{ color: colors.textMuted, fontSize: 13 }}>
-                  {meta ? ` / ${metaFormatada}` : ""}
+        {mostrarDashboard && (
+          <>
+            <View style={style.resumoRow}>
+              <View style={style.resumoCard}>
+                <Text style={style.resumoLabel}>Total no período</Text>
+                <Text style={[style.resumoValorDestaque, { color: corAtual }]}>
+                  {totalFormatado}
                 </Text>
-              </Text>
-            </View>
-            <Pressable
-              style={style.metaBtn}
-              onPress={() => {
-                setInputMeta(meta ? String(meta) : "");
-                setModalVisible(true);
-              }}
-            >
-              <Text style={style.metaBtnText}>
-                {meta ? "Alterar meta" : "Definir meta"}
-              </Text>
-            </Pressable>
-          </View>
-
-          {meta !== null && (
-            <>
-              <View style={style.progressBg}>
-                <View
-                  style={[
-                    style.progressFill,
-                    {
-                      width: `${Math.round(progresso * 100)}%`,
-                      backgroundColor: corAtual,
-                    },
-                  ]}
-                />
               </View>
-              <Text style={style.progressLabel}>
-                {Math.round(progresso * 100)}% da meta atingida
-              </Text>
-            </>
-          )}
-        </View>
-
-        {/* Filtro de datas */}
-        <View style={style.filtroCard}>
-          <Text style={style.filtroLabel}>Período</Text>
-          <View style={style.filtroRow}>
-            <TextInput
-              style={style.filtroInputBox}
-              value={inputInicio}
-              onChangeText={(text) => setInputInicio(mascaraData(text))}
-              placeholder="DD/MM/AAAA"
-              placeholderTextColor={colors.textFaint}
-              keyboardType="numeric"
-              maxLength={10}
-              onBlur={aplicarFiltro}
-            />
-            <Text style={style.filtroSeparador}>até</Text>
-            <TextInput
-              style={style.filtroInputBox}
-              value={inputFim}
-              onChangeText={(text) => setInputFim(mascaraData(text))}
-              placeholder="DD/MM/AAAA"
-              placeholderTextColor={colors.textFaint}
-              keyboardType="numeric"
-              maxLength={10}
-              onBlur={aplicarFiltro}
-            />
-            <Pressable
-              style={style.filtroBtnHoje}
-              onPress={resetarParaMesAtual}
-            >
-              <Text style={style.filtroBtnHojeText}>Mês atual</Text>
-            </Pressable>
-          </View>
-        </View>
-
-        {/* Gráfico */}
-        <View
-          style={style.graficoCard}
-          onLayout={(e) => setGraficoWidth(e.nativeEvent.layout.width)}
-        >
-          <View style={style.graficoHeader}>
-            <Text style={style.graficoTitulo}>Vendas acumuladas</Text>
-            <View style={style.legendaRow}>
-              <View style={[style.legendaDot, { backgroundColor: corAtual }]} />
-              <Text style={style.legendaText}>
-                {meta === null
-                  ? "Sem meta"
-                  : progresso >= 1
-                    ? "Meta atingida"
-                    : progresso >= 0.75
-                      ? "Próximo da meta"
-                      : "Abaixo da meta"}
-              </Text>
+              <View style={style.resumoCard}>
+                <Text style={style.resumoLabel}>Meta mensal</Text>
+                <Text style={style.resumoValor}>{metaFormatada}</Text>
+              </View>
             </View>
-          </View>
 
-          {pontos.length >= 2 ? (
-            <VictoryChart
-              width={graficoWidth}
-              height={200}
-              padding={{ top: 20, bottom: 40, left: 50, right: 20 }}
-              domainPadding={{ y: [10, 30] }}
-            >
-              <VictoryAxis
-                style={{
-                  axis: { stroke: colors.border },
-                  tickLabels: { fontSize: 10, fill: colors.textMuted },
-                }}
-              />
-              <VictoryAxis
-                dependentAxis
-                style={{
-                  axis: { stroke: colors.border },
-                  tickLabels: { fontSize: 10, fill: colors.textMuted },
-                }}
-                tickFormat={(t) => `R$${t}`}
-              />
-              <VictoryLine
-                data={pontos}
-                interpolation="monotoneX"
-                style={{
-                  data: {
-                    stroke: corAtual,
-                    strokeWidth: 2.5,
-                  },
-                }}
-              />
-            </VictoryChart>
-          ) : (
-            <View style={style.emptyGrafico}>
-              <MaterialCommunityIcons
-                name="chart-line"
-                size={40}
-                color={colors.textFaint}
-              />
-              <Text style={style.emptyText}>
-                Nenhuma venda no período selecionado
-              </Text>
+            {/* Card da meta com progress bar */}
+            <View style={style.metaCard}>
+              <View style={style.metaRow}>
+                <View>
+                  <Text style={style.metaLabel}>Meta — {mesAtual()}</Text>
+                  <Text style={[style.metaValor, { color: corAtual }]}>
+                    {totalFormatado}
+                    <Text style={{ color: colors.textMuted, fontSize: 13 }}>
+                      {meta ? ` / ${metaFormatada}` : ""}
+                    </Text>
+                  </Text>
+                </View>
+                <Pressable
+                  style={style.metaBtn}
+                  onPress={() => {
+                    setInputMeta(meta ? String(meta) : "");
+                    setModalVisible(true);
+                  }}
+                >
+                  <Text style={style.metaBtnText}>
+                    {meta ? "Alterar meta" : "Definir meta"}
+                  </Text>
+                </Pressable>
+              </View>
+
+              {meta !== null && (
+                <>
+                  <View style={style.progressBg}>
+                    <View
+                      style={[
+                        style.progressFill,
+                        {
+                          width: `${Math.round(progresso * 100)}%`,
+                          backgroundColor: corAtual,
+                        },
+                      ]}
+                    />
+                  </View>
+                  <Text style={style.progressLabel}>
+                    {Math.round(progresso * 100)}% da meta atingida
+                  </Text>
+                </>
+              )}
             </View>
-          )}
-        </View>
+
+            {/* Filtro de datas */}
+            <View style={style.filtroCard}>
+              <Text style={style.filtroLabel}>Período</Text>
+              <View style={style.filtroRow}>
+                <TextInput
+                  style={style.filtroInputBox}
+                  value={inputInicio}
+                  onChangeText={(text) => setInputInicio(mascaraData(text))}
+                  placeholder="DD/MM/AAAA"
+                  placeholderTextColor={colors.textFaint}
+                  keyboardType="numeric"
+                  maxLength={10}
+                  onBlur={aplicarFiltro}
+                />
+                <Text style={style.filtroSeparador}>até</Text>
+                <TextInput
+                  style={style.filtroInputBox}
+                  value={inputFim}
+                  onChangeText={(text) => setInputFim(mascaraData(text))}
+                  placeholder="DD/MM/AAAA"
+                  placeholderTextColor={colors.textFaint}
+                  keyboardType="numeric"
+                  maxLength={10}
+                  onBlur={aplicarFiltro}
+                />
+                <Pressable
+                  style={style.filtroBtnHoje}
+                  onPress={resetarParaMesAtual}
+                >
+                  <Text style={style.filtroBtnHojeText}>Mês atual</Text>
+                </Pressable>
+              </View>
+            </View>
+
+            <GraficoVendasLinha
+              pontos={pontos}
+              corLinha={corAtual}
+              meta={meta}
+              progresso={progresso}
+            />
+            <GraficoFormaPagamento
+              dataInicioPadrao={dataInicio}
+              dataFimPadrao={dataFim}
+            />
+          </>
+        )}
         {/* Atalhos rápidos */}
         <View style={style.atalhosTitulo}>
           <Text style={style.atalhosLabel}>Menu de Opções</Text>

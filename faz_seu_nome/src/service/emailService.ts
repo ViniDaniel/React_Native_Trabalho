@@ -1,4 +1,5 @@
 import * as MailComposer from "expo-mail-composer";
+import { FormaPagamento } from "../types/pagamentos";
 
 export type ItemNota = {
   produto_nome: string;
@@ -14,6 +15,7 @@ export type NotaVenda = {
   dataVenda: string;
   itens: ItemNota[];
   total: number;
+  forma_pagamento: FormaPagamento;
   desconto?: number;
   nomeVendedor: string;
 };
@@ -49,7 +51,7 @@ function gerarCorpoEmail(nota: NotaVenda): string {
   const linhaDocumento =
     nota.clienteDocumento && nota.clienteDocumento !== "00000000000"
       ? `${nota.clienteDocumento.length === 11 ? "CPF" : "CNPJ"}: ${formatarDocumento(nota.clienteDocumento)}\n`
-    : "";
+      : "";
 
   const linhaData = formatarData(nota.dataVenda);
   const linhaCelular =
@@ -69,7 +71,8 @@ function gerarCorpoEmail(nota: NotaVenda): string {
     `${linhaEmail}\n\n` +
     `-----------------------------------------------------------------------\n\n` +
     `Segue a nota da sua compra realizada em ${linhaData}:\n\n` +
-    `${linhasItens}\n\n` +
+    `${linhasItens}\n\n\n` +
+    `Forma de Pagamento: ${nota.forma_pagamento}\n\n` +
     `${linhaDesconto}\n\n` +
     `Total: R$ ${nota.total.toFixed(2)}\n\n` +
     `-----------------------------------------------------------------------\n\n` +

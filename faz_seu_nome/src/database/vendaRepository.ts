@@ -1,6 +1,9 @@
+//vendaRespository
+
+import { FormaPagamento } from "../types/pagamentos";
 import { getDB} from "./db";
 
-export async function insertVenda(cliente_id:number, data:string, total:number, desconto:number = 0) {
+export async function insertVenda(cliente_id:number, data:string, total:number, desconto:number = 0, forma_pagamento:FormaPagamento,) {
     if(!data || total < 0){
         throw new Error("Dados inválidos")
     }
@@ -8,8 +11,8 @@ export async function insertVenda(cliente_id:number, data:string, total:number, 
     const db = await getDB()
 
     const result = await db.runAsync(
-        "INSERT INTO vendas (cliente_id, data, total, desconto) VALUES (?, ?, ?, ?)",
-        [cliente_id, data, total, desconto],
+        "INSERT INTO vendas (cliente_id, data, total, desconto, forma_pagamento) VALUES (?, ?, ?, ?, ?)",
+        [cliente_id, data, total, desconto, forma_pagamento],
     )
     return result.lastInsertRowId
 }
@@ -62,4 +65,17 @@ export async function getTotalPeriodo(dataInicio: string, dataFim: string) {
     [dataInicio, dataFim]
   ) as any;
   return row?.total ?? 0;
+}
+
+
+export async function getVendasPorFormaPagamento(dataInicio: string, dataFim: string) {
+  const db = await getDB();
+  return await db.getAllAsync(
+    `SELECT forma_pagamento, SUM(total) AS total
+     FROM vendas
+     WHERE data BETWEEN ? AND ?
+     GROUP BY forma_pagamento
+     ORDER BY total DESC`,
+    [dataInicio, dataFim]
+  ) as { forma_pagamento: string; total: number }[];
 }

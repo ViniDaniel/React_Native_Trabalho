@@ -30,6 +30,22 @@ export const createStyle = (colors: any, fontScale: number = 1.0) => {
       color: colors.textMuted,
       marginTop: 4,
     },
+    toggleBtn: {
+      marginTop: 12,
+      alignSelf: "flex-start",
+      backgroundColor: colors.yellowTint,
+      borderRadius: 10,
+      borderWidth: 1,
+      borderColor: colors.yellowBorder,
+      paddingHorizontal: 12,
+      paddingVertical: 8,
+    },
+
+    toggleBtnText: {
+      fontSize: fs.xs,
+      fontWeight: "700",
+      color: colors.yellow,
+    },
 
     // Cards de resumo
     resumoRow: {
@@ -116,52 +132,6 @@ export const createStyle = (colors: any, fontScale: number = 1.0) => {
       fontWeight: "700",
       color: colors.yellow,
     },
-
-
-    graficoCard: {
-      backgroundColor: colors.surface,
-      borderRadius: 14,
-      padding: 16,
-      borderWidth: 1,
-      borderColor: colors.border,
-      marginBottom: 12,
-      overflow: "hidden", 
-    },
-    graficoHeader: {
-      flexDirection: "row",
-      justifyContent: "space-between",
-      alignItems: "center",
-      marginBottom: 16,
-    },
-    graficoTitulo: {
-      fontSize: fs.md,
-      fontWeight: "700",
-      color: colors.text,
-    },
-    legendaRow: {
-      flexDirection: "row",
-      alignItems: "center",
-      gap: 6,
-    },
-    legendaDot: {
-      width: 8,
-      height: 8,
-      borderRadius: 4,
-    },
-    legendaText: {
-      fontSize: fs.xs,
-      color: colors.textMuted,
-    },
-    emptyGrafico: {
-      alignItems: "center",
-      paddingVertical: 40,
-      gap: 8,
-    },
-    emptyText: {
-      fontSize: fs.sm,
-      color: colors.textFaint,
-    },
-
     // Meta
     metaCard: {
       backgroundColor: colors.surface,
@@ -348,7 +318,7 @@ export const createStyle = (colors: any, fontScale: number = 1.0) => {
       alignItems: "center",
       justifyContent: "center",
       borderWidth: 2,
-      borderColor: colors.background, // cria separação visual do ícone
+      borderColor: colors.background,
     },
   });
 };

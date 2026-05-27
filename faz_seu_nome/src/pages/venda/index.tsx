@@ -24,6 +24,8 @@ import { getAllProdutos } from "../../database/produtoRepository";
 import { criarVenda } from "../../service/vendaService";
 import { AuthContext } from "../../context/authContext";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
+import { FormaPagamento, FORMAS_PAGAMENTO } from "../../types/pagamentos";
+import { Picker } from "@react-native-picker/picker";
 
 // ─── Tipos locais ────────────────────────────────────────────────────────────
 
@@ -86,7 +88,8 @@ export default function Venda() {
   const [descontoAtivo, setDescontoAtivo] = useState(false);
   const [inputDesconto, setInputDesconto] = useState("");
   const [descontoAplicado, setDescontoAplicado] = useState(0);
-
+  const [forma_pagamento, setFormaPagamento] =
+    useState<FormaPagamento>("Não Informado");
   // ── Estado de envio ──
   const [enviarEmail, setEnviarEmail] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -281,14 +284,15 @@ export default function Venda() {
 
   // Extrai a lógica de execução para evitar duplicação
   const executarVenda = async (forcar: boolean) => {
-     console.log("CLIENTE SELECIONADO:", JSON.stringify(clienteSelecionado));
+    console.log("CLIENTE SELECIONADO:", JSON.stringify(clienteSelecionado));
     setLoading(true);
     try {
       let cliente_id = clienteSelecionado!.id;
 
       if (cliente_id === ID_CLIENTE_FANTASMA) {
         const jaExiste = clientes.find(
-          (c) => c.nome === NOME_CLIENTE_FANTASMA && c.documento === "00000000000",
+          (c) =>
+            c.nome === NOME_CLIENTE_FANTASMA && c.documento === "00000000000",
         );
         cliente_id = jaExiste
           ? jaExiste.id
@@ -310,6 +314,7 @@ export default function Venda() {
             valor: parseMoeda(i.valor),
           })),
           desconto: valorDesconto,
+          forma_pagamento,
           enviarEmail,
           nomeVendedor: user?.nome ?? "Vendedor",
         },
@@ -319,7 +324,6 @@ export default function Venda() {
       Alert.alert("Sucesso", "Venda registrada com sucesso!", [
         { text: "OK", onPress: () => navigation.goBack() },
       ]);
-      
     } catch (err: any) {
       Alert.alert("Erro", err?.message || "Erro ao registrar venda.");
     } finally {
@@ -359,416 +363,138 @@ export default function Venda() {
     setDescontoAplicado(valor);
   }
 
-  function handleToggleDesconto(valor: boolean){
+  function handleToggleDesconto(valor: boolean) {
     setDescontoAtivo(valor);
-    if(!valor){
-      setInputDesconto("")
-      setDescontoAplicado(0)
+    if (!valor) {
+      setInputDesconto("");
+      setDescontoAplicado(0);
     }
   }
 
   // ─── Render ───────────────────────────────────────────────────────────────
 
   return (
-<View style={{flex: 1}}>
-    <TopBar onBack={() => navigation.goBack()} scrollY={scrollY} />
-    <KeyboardAwareScrollView
-      style={{ flex: 1, backgroundColor: colors.background }}
-      showsVerticalScrollIndicator={false}
-      keyboardShouldPersistTaps="handled"
-      enableOnAndroid={true} // ← chave para Android funcionar
-      extraScrollHeight={80} // ← espaço extra acima do teclado
-      enableAutomaticScroll={true} // ← rola automaticamente até o input focado
-    >
-      
-
-      <Animated.ScrollView
-        style={style.container}
-        contentContainerStyle={style.contentContainer}
+    <View style={{ flex: 1 }}>
+      <TopBar onBack={() => navigation.goBack()} scrollY={scrollY} />
+      <KeyboardAwareScrollView
+        style={{ flex: 1, backgroundColor: colors.background }}
         showsVerticalScrollIndicator={false}
         keyboardShouldPersistTaps="handled"
-        onScroll={Animated.event(
-          [{ nativeEvent: { contentOffset: { y: scrollY } } }],
-          { useNativeDriver: true },
-        )}
-        scrollEventThrottle={16}
+        enableOnAndroid={true} // ← chave para Android funcionar
+        extraScrollHeight={80} // ← espaço extra acima do teclado
+        enableAutomaticScroll={true} // ← rola automaticamente até o input focado
       >
-        {/* ── Título ── */}
-        <View style={style.header}>
-          <Text style={style.title}>Nova Venda</Text>
-        </View>
+        <Animated.ScrollView
+          style={style.container}
+          contentContainerStyle={style.contentContainer}
+          showsVerticalScrollIndicator={false}
+          keyboardShouldPersistTaps="handled"
+          onScroll={Animated.event(
+            [{ nativeEvent: { contentOffset: { y: scrollY } } }],
+            { useNativeDriver: true },
+          )}
+          scrollEventThrottle={16}
+        >
+          {/* ── Título ── */}
+          <View style={style.header}>
+            <Text style={style.title}>Nova Venda</Text>
+          </View>
 
-        {/* ══════════════════════════════════════════
+          {/* ══════════════════════════════════════════
             SEÇÃO CLIENTE
         ══════════════════════════════════════════ */}
-        <Text style={style.sectionLabel}>Cliente</Text>
+          <Text style={style.sectionLabel}>Cliente</Text>
 
-        {/* Barra de busca de cliente — desabilitada se semCadastro */}
-        <View
-          style={[style.searchWrapper, semCadastro && style.searchDisabled]}
-        >
-          <MaterialCommunityIcons
-            name="account-search-outline"
-            size={20}
-            color={semCadastro ? colors.textFaint : colors.textMuted}
-          />
-          <TextInput
-            style={style.searchInput}
-            placeholder="Buscar por nome ou CPF..."
-            placeholderTextColor={colors.textMuted}
-            value={semCadastro ? "" : buscaCliente}
-            editable={!semCadastro}
-            onChangeText={(t) => {
-              setBuscaCliente(t);
-              setMostrarListaCliente(t.length > 0);
-              if (clienteSelecionado?.id !== ID_CLIENTE_FANTASMA) {
-                setClienteSelecionado(null);
-              }
-            }}
-            onFocus={() => {
-              if (buscaCliente.length > 0) setMostrarListaCliente(true);
-            }}
-          />
-          {clienteSelecionado && !semCadastro && (
-            <TouchableOpacity
-              onPress={() => {
-                setClienteSelecionado(null);
-                setBuscaCliente("");
+          {/* Barra de busca de cliente — desabilitada se semCadastro */}
+          <View
+            style={[style.searchWrapper, semCadastro && style.searchDisabled]}
+          >
+            <MaterialCommunityIcons
+              name="account-search-outline"
+              size={20}
+              color={semCadastro ? colors.textFaint : colors.textMuted}
+            />
+            <TextInput
+              style={style.searchInput}
+              placeholder="Buscar por nome ou CPF..."
+              placeholderTextColor={colors.textMuted}
+              value={semCadastro ? "" : buscaCliente}
+              editable={!semCadastro}
+              onChangeText={(t) => {
+                setBuscaCliente(t);
+                setMostrarListaCliente(t.length > 0);
+                if (clienteSelecionado?.id !== ID_CLIENTE_FANTASMA) {
+                  setClienteSelecionado(null);
+                }
               }}
-            >
-              <MaterialCommunityIcons
-                name="close"
-                size={18}
-                color={colors.textMuted}
-              />
-            </TouchableOpacity>
-          )}
-        </View>
-
-        {/* Dropdown de clientes */}
-        {mostrarListaCliente && !semCadastro && (
-          <View style={style.dropdown}>
-            {clientesFiltrados.length === 0 ? (
-              <Text style={style.dropdownEmpty}>Nenhum cliente encontrado</Text>
-            ) : (
-              clientesFiltrados.map((c) => (
-                <TouchableOpacity
-                  key={c.id}
-                  style={style.dropdownItem}
-                  onPress={() => handleSelecionarCliente(c)}
-                >
-                  <Text style={style.dropdownItemTitle}>{c.nome}</Text>
-                  <Text style={style.dropdownItemSub}>CPF: {c.documento}</Text>
-                </TouchableOpacity>
-              ))
-            )}
-          </View>
-        )}
-
-        {/* Cliente selecionado — pill */}
-        {clienteSelecionado && !semCadastro && (
-          <View style={style.selectedPill}>
-            <MaterialCommunityIcons
-              name="account-check-outline"
-              size={16}
-              color={colors.yellow}
+              onFocus={() => {
+                if (buscaCliente.length > 0) setMostrarListaCliente(true);
+              }}
             />
-            <Text style={style.selectedPillText}>
-              {clienteSelecionado.nome}
-            </Text>
-          </View>
-        )}
-
-        {/* Checkbox sem cadastro */}
-        <TouchableOpacity
-          style={style.checkboxRow}
-          onPress={() => handleToggleSemCadastro(!semCadastro)}
-          activeOpacity={0.7}
-        >
-          <View style={[style.checkbox, semCadastro && style.checkboxChecked]}>
-            {semCadastro && (
-              <MaterialCommunityIcons
-                name="check"
-                size={14}
-                color={colors.background}
-              />
-            )}
-          </View>
-          <Text style={style.checkboxLabel}>Cliente sem cadastro</Text>
-        </TouchableOpacity>
-
-        {/* ══════════════════════════════════════════
-            SEÇÃO PRODUTOS
-        ══════════════════════════════════════════ */}
-        <Text style={[style.sectionLabel, { marginTop: 24 }]}>Produtos</Text>
-
-        <View style={style.searchWrapper}>
-          <MaterialCommunityIcons
-            name="package-variant-closed"
-            size={20}
-            color={colors.textMuted}
-          />
-          <TextInput
-            style={style.searchInput}
-            placeholder="Buscar por nome ou marca..."
-            placeholderTextColor={colors.textMuted}
-            value={buscaProduto}
-            onChangeText={(t) => {
-              setBuscaProduto(t);
-              setMostrarListaProduto(t.length > 0);
-            }}
-            onFocus={() => {
-              if (buscaProduto.length > 0) setMostrarListaProduto(true);
-            }}
-          />
-        </View>
-
-        {/* Dropdown de produtos */}
-        {mostrarListaProduto && (
-          <View style={style.dropdown}>
-            {produtosFiltrados.length === 0 ? (
-              <Text style={style.dropdownEmpty}>Nenhum produto encontrado</Text>
-            ) : (
-              produtosFiltrados.map((p) => (
-                <TouchableOpacity
-                  key={p.id}
-                  style={style.dropdownItem}
-                  onPress={() => handleSelecionarProduto(p)}
-                >
-                  <Text style={style.dropdownItemTitle}>{p.nome}</Text>
-                  <Text style={style.dropdownItemSub}>
-                    {p.marca} · Estoque: {p.quantidade} ·{" "}
-                    {formatarMoeda(p.valor)}
-                  </Text>
-                </TouchableOpacity>
-              ))
-            )}
-          </View>
-        )}
-
-        {/* ── Itens selecionados ── */}
-        {itensSelecionados.length > 0 && (
-          <View style={style.itensContainer}>
-            {itensSelecionados.map((item, index) => (
-              <View
-                key={item.produto.id}
-                style={[
-                  style.itemCard,
-                  item.confirmado && style.itemCardConfirmado,
-                ]}
+            {clienteSelecionado && !semCadastro && (
+              <TouchableOpacity
+                onPress={() => {
+                  setClienteSelecionado(null);
+                  setBuscaCliente("");
+                }}
               >
-                {/* Cabeçalho do card */}
-                <View style={style.itemCardHeader}>
-                  <View style={{ flex: 1 }}>
-                    <Text style={style.itemNome}>{item.produto.nome}</Text>
-                    <Text style={style.itemMarca}>{item.produto.marca}</Text>
-                  </View>
-
-                  {/* Ações: ✔️ ✍️ ❌ */}
-                  <View style={style.itemAcoes}>
-                    {!item.confirmado ? (
-                      <TouchableOpacity
-                        style={[style.itemBtn, style.itemBtnConfirmar]}
-                        onPress={() => handleConfirmarItem(index)}
-                      >
-                        <Text style={style.itemBtnIcon}>✅</Text>
-                      </TouchableOpacity>
-                    ) : (
-                      <TouchableOpacity
-                        style={[style.itemBtn, style.itemBtnEditar]}
-                        onPress={() => handleEditarItem(index)}
-                      >
-                        <Text style={style.itemBtnIcon}>✍️</Text>
-                      </TouchableOpacity>
-                    )}
-                    <TouchableOpacity
-                      style={[style.itemBtn, style.itemBtnRemover]}
-                      onPress={() => handleRemoverItem(index)}
-                    >
-                      <Text style={style.itemBtnIcon}>❌</Text>
-                    </TouchableOpacity>
-                  </View>
-                </View>
-
-                {/* Campos de quantidade e valor */}
-                {!item.confirmado ? (
-                  <View style={style.itemCampos}>
-                    <View style={style.itemCampoWrapper}>
-                      <Text style={style.itemCampoLabel}>Quantidade</Text>
-                      <TextInput
-                        style={style.itemCampoInput}
-                        keyboardType="numeric"
-                        value={item.quantidade}
-                        onChangeText={(t) =>
-                          handleUpdateCampo(
-                            index,
-                            "quantidade",
-                            t.replace(/[^0-9]/g, ""),
-                          )
-                        }
-                        placeholderTextColor={colors.textMuted}
-                        placeholder="0"
-                        maxLength={4}
-                      />
-                    </View>
-
-                    <View style={style.itemCampoWrapper}>
-                      <Text style={style.itemCampoLabel}>Valor unit. (R$)</Text>
-                      <TextInput
-                        style={style.itemCampoInput}
-                        keyboardType="decimal-pad"
-                        value={item.valor}
-                        onChangeText={(t) =>
-                          handleUpdateCampo(index, "valor", t)
-                        }
-                        placeholderTextColor={colors.textMuted}
-                        placeholder="0,00"
-                        maxLength={10}
-                      />
-                    </View>
-                  </View>
-                ) : (
-                  /* Resumo quando confirmado */
-                  <View style={style.itemResumo}>
-                    <Text style={style.itemResumoText}>
-                      {item.quantidade} un. ×{" "}
-                      {formatarMoeda(parseMoeda(item.valor))}
-                    </Text>
-                    <Text style={style.itemResumoTotal}>
-                      ={" "}
-                      {formatarMoeda(
-                        parseInt(item.quantidade) * parseMoeda(item.valor),
-                      )}
-                    </Text>
-                  </View>
-                )}
-                {/* ↓ ALERTA DE ESTOQUE — cola aqui, após o bloco acima */}
-                {item.confirmado && item.semEstoque && (
-                  <View style={style.alertaEstoque}>
-                    <MaterialCommunityIcons
-                      name="alert-circle-outline"
-                      size={14}
-                      color={colors.error}
-                    />
-                    <Text style={style.alertaEstoqueText}>
-                      Estoque insuficiente · disponível: {item.estoqueAtual} un.
-                    </Text>
-                  </View>
-                )}
-              </View>
-            ))}
+                <MaterialCommunityIcons
+                  name="close"
+                  size={18}
+                  color={colors.textMuted}
+                />
+              </TouchableOpacity>
+            )}
           </View>
-        )}
 
-        {/* ── Total ── */}
-        {/* ── Desconto ── */}
-{itensConfirmados.length > 0 && (
-  <View style={style.descontoCard}>
+          {/* Dropdown de clientes */}
+          {mostrarListaCliente && !semCadastro && (
+            <View style={style.dropdown}>
+              {clientesFiltrados.length === 0 ? (
+                <Text style={style.dropdownEmpty}>
+                  Nenhum cliente encontrado
+                </Text>
+              ) : (
+                clientesFiltrados.map((c) => (
+                  <TouchableOpacity
+                    key={c.id}
+                    style={style.dropdownItem}
+                    onPress={() => handleSelecionarCliente(c)}
+                  >
+                    <Text style={style.dropdownItemTitle}>{c.nome}</Text>
+                    <Text style={style.dropdownItemSub}>
+                      CPF: {c.documento}
+                    </Text>
+                  </TouchableOpacity>
+                ))
+              )}
+            </View>
+          )}
 
-    {/* Checkbox de desconto */}
-    <TouchableOpacity
-      style={style.checkboxRow}
-      onPress={() => handleToggleDesconto(!descontoAtivo)}
-      activeOpacity={0.7}
-    >
-      <View style={[style.checkbox, descontoAtivo && style.checkboxChecked]}>
-        {descontoAtivo && (
-          <MaterialCommunityIcons name="check" size={14} color={colors.background} />
-        )}
-      </View>
-      <Text style={style.checkboxLabel}>Aplicar desconto</Text>
-    </TouchableOpacity>
+          {/* Cliente selecionado — pill */}
+          {clienteSelecionado && !semCadastro && (
+            <View style={style.selectedPill}>
+              <MaterialCommunityIcons
+                name="account-check-outline"
+                size={16}
+                color={colors.yellow}
+              />
+              <Text style={style.selectedPillText}>
+                {clienteSelecionado.nome}
+              </Text>
+            </View>
+          )}
 
-    {/* Input de desconto — aparece ao ativar */}
-    {descontoAtivo && (
-      <View style={style.descontoInputRow}>
-        <View style={style.descontoInputWrapper}>
-          <TextInput
-            style={style.descontoInput}
-            value={inputDesconto}
-            onChangeText={setInputDesconto}
-            keyboardType="decimal-pad"
-            placeholder="0"
-            placeholderTextColor={colors.textFaint}
-            maxLength={5}
-          />
-          <Text style={style.descontoSufixo}>%</Text>
-        </View>
-
-        <TouchableOpacity
-          style={style.descontoBtn}
-          onPress={aplicarDesconto}
-        >
-          <Text style={style.descontoBtnText}>Aplicar</Text>
-        </TouchableOpacity>
-
-        {/* Alerta visual se > 10% */}
-        {descontoAplicado > 10 && (
-          <View style={style.descontoAlerta}>
-            <MaterialCommunityIcons
-              name="alert-circle-outline"
-              size={14}
-              color={colors.warning}
-            />
-            <Text style={style.descontoAlertaText}>
-              Desconto acima de 10%
-            </Text>
-          </View>
-        )}
-      </View>
-    )}
-
-    {/* Linha de desconto aplicado */}
-    {descontoAplicado > 0 && (
-      <View style={style.descontoResumo}>
-        <Text style={style.descontoResumoLabel}>
-          Desconto ({descontoAplicado}%)
-        </Text>
-        <Text style={style.descontoResumoValor}>
-          − {formatarMoeda(valorDesconto)}
-        </Text>
-      </View>
-    )}
-  </View>
-)}
-
-{/* ── Total ── */}
-{itensConfirmados.length > 0 && (
-  <View style={style.totalCard}>
-    {descontoAplicado > 0 && (
-      <View style={style.totalSubtotalRow}>
-        <Text style={style.totalSubtotalLabel}>Subtotal</Text>
-        <Text style={style.totalSubtotalValor}>{formatarMoeda(totalVenda)}</Text>
-      </View>
-    )}
-    <Text style={style.totalLabel}>Total da venda</Text>
-    <Text style={style.totalValor}>{formatarMoeda(totalComDesconto)}</Text>
-  </View>
-)}
-
-        {/* ══════════════════════════════════════════
-            RODAPÉ: E-MAIL + BOTÃO
-        ══════════════════════════════════════════ */}
-        <View style={style.footer}>
-          {/* Checkbox de e-mail */}
+          {/* Checkbox sem cadastro */}
           <TouchableOpacity
-            style={[
-              style.checkboxRow,
-              semCadastro && style.checkboxRowDisabled,
-            ]}
-            onPress={() => {
-              if (!semCadastro) setEnviarEmail((prev) => !prev);
-            }}
-            activeOpacity={semCadastro ? 1 : 0.7}
+            style={style.checkboxRow}
+            onPress={() => handleToggleSemCadastro(!semCadastro)}
+            activeOpacity={0.7}
           >
             <View
-              style={[
-                style.checkbox,
-                enviarEmail && !semCadastro && style.checkboxChecked,
-                semCadastro && style.checkboxDisabled,
-              ]}
+              style={[style.checkbox, semCadastro && style.checkboxChecked]}
             >
-              {enviarEmail && !semCadastro && (
+              {semCadastro && (
                 <MaterialCommunityIcons
                   name="check"
                   size={14}
@@ -776,45 +502,368 @@ export default function Venda() {
                 />
               )}
             </View>
-            <View>
-              <Text
-                style={[
-                  style.checkboxLabel,
-                  semCadastro && style.checkboxLabelDisabled,
-                ]}
-              >
-                Enviar nota por e-mail
-              </Text>
-              {semCadastro && (
-                <Text style={style.checkboxHint}>
-                  Indisponível para cliente sem cadastro
-                </Text>
-              )}
-            </View>
+            <Text style={style.checkboxLabel}>Cliente sem cadastro</Text>
           </TouchableOpacity>
 
-          {/* Botão confirmar venda */}
-          <Pressable
-            style={({ pressed }) => [
-              style.btnConfirmar,
-              pressed && style.btnConfirmarPressed,
-              loading && style.btnConfirmarDisabled,
-            ]}
-            onPress={handleConfirmarVenda}
-            disabled={loading}
-          >
+          {/* ══════════════════════════════════════════
+            SEÇÃO PRODUTOS
+        ══════════════════════════════════════════ */}
+          <Text style={[style.sectionLabel, { marginTop: 24 }]}>Produtos</Text>
+
+          <View style={style.searchWrapper}>
             <MaterialCommunityIcons
-              name="cart-check"
+              name="package-variant-closed"
               size={20}
-              color={colors.background}
+              color={colors.textMuted}
             />
-            <Text style={style.btnConfirmarText}>
-              {loading ? "Registrando..." : "Confirmar Venda"}
-            </Text>
-          </Pressable>
-        </View>
-      </Animated.ScrollView>
-    </KeyboardAwareScrollView>
+            <TextInput
+              style={style.searchInput}
+              placeholder="Buscar por nome ou marca..."
+              placeholderTextColor={colors.textMuted}
+              value={buscaProduto}
+              onChangeText={(t) => {
+                setBuscaProduto(t);
+                setMostrarListaProduto(t.length > 0);
+              }}
+              onFocus={() => {
+                if (buscaProduto.length > 0) setMostrarListaProduto(true);
+              }}
+            />
+          </View>
+
+          {/* Dropdown de produtos */}
+          {mostrarListaProduto && (
+            <View style={style.dropdown}>
+              {produtosFiltrados.length === 0 ? (
+                <Text style={style.dropdownEmpty}>
+                  Nenhum produto encontrado
+                </Text>
+              ) : (
+                produtosFiltrados.map((p) => (
+                  <TouchableOpacity
+                    key={p.id}
+                    style={style.dropdownItem}
+                    onPress={() => handleSelecionarProduto(p)}
+                  >
+                    <Text style={style.dropdownItemTitle}>{p.nome}</Text>
+                    <Text style={style.dropdownItemSub}>
+                      {p.marca} · Estoque: {p.quantidade} ·{" "}
+                      {formatarMoeda(p.valor)}
+                    </Text>
+                  </TouchableOpacity>
+                ))
+              )}
+            </View>
+          )}
+
+          {/* ── Itens selecionados ── */}
+          {itensSelecionados.length > 0 && (
+            <View style={style.itensContainer}>
+              {itensSelecionados.map((item, index) => (
+                <View
+                  key={item.produto.id}
+                  style={[
+                    style.itemCard,
+                    item.confirmado && style.itemCardConfirmado,
+                  ]}
+                >
+                  {/* Cabeçalho do card */}
+                  <View style={style.itemCardHeader}>
+                    <View style={{ flex: 1 }}>
+                      <Text style={style.itemNome}>{item.produto.nome}</Text>
+                      <Text style={style.itemMarca}>{item.produto.marca}</Text>
+                    </View>
+
+                    {/* Ações: ✔️ ✍️ ❌ */}
+                    <View style={style.itemAcoes}>
+                      {!item.confirmado ? (
+                        <TouchableOpacity
+                          style={[style.itemBtn, style.itemBtnConfirmar]}
+                          onPress={() => handleConfirmarItem(index)}
+                        >
+                          <Text style={style.itemBtnIcon}>✅</Text>
+                        </TouchableOpacity>
+                      ) : (
+                        <TouchableOpacity
+                          style={[style.itemBtn, style.itemBtnEditar]}
+                          onPress={() => handleEditarItem(index)}
+                        >
+                          <Text style={style.itemBtnIcon}>✍️</Text>
+                        </TouchableOpacity>
+                      )}
+                      <TouchableOpacity
+                        style={[style.itemBtn, style.itemBtnRemover]}
+                        onPress={() => handleRemoverItem(index)}
+                      >
+                        <Text style={style.itemBtnIcon}>❌</Text>
+                      </TouchableOpacity>
+                    </View>
+                  </View>
+
+                  {/* Campos de quantidade e valor */}
+                  {!item.confirmado ? (
+                    <View style={style.itemCampos}>
+                      <View style={style.itemCampoWrapper}>
+                        <Text style={style.itemCampoLabel}>Quantidade</Text>
+                        <TextInput
+                          style={style.itemCampoInput}
+                          keyboardType="numeric"
+                          value={item.quantidade}
+                          onChangeText={(t) =>
+                            handleUpdateCampo(
+                              index,
+                              "quantidade",
+                              t.replace(/[^0-9]/g, ""),
+                            )
+                          }
+                          placeholderTextColor={colors.textMuted}
+                          placeholder="0"
+                          maxLength={4}
+                        />
+                      </View>
+
+                      <View style={style.itemCampoWrapper}>
+                        <Text style={style.itemCampoLabel}>
+                          Valor unit. (R$)
+                        </Text>
+                        <TextInput
+                          style={style.itemCampoInput}
+                          keyboardType="decimal-pad"
+                          value={item.valor}
+                          onChangeText={(t) =>
+                            handleUpdateCampo(index, "valor", t)
+                          }
+                          placeholderTextColor={colors.textMuted}
+                          placeholder="0,00"
+                          maxLength={10}
+                        />
+                      </View>
+                    </View>
+                  ) : (
+                    /* Resumo quando confirmado */
+                    <View style={style.itemResumo}>
+                      <Text style={style.itemResumoText}>
+                        {item.quantidade} un. ×{" "}
+                        {formatarMoeda(parseMoeda(item.valor))}
+                      </Text>
+                      <Text style={style.itemResumoTotal}>
+                        ={" "}
+                        {formatarMoeda(
+                          parseInt(item.quantidade) * parseMoeda(item.valor),
+                        )}
+                      </Text>
+                    </View>
+                  )}
+                  {/* ↓ ALERTA DE ESTOQUE — cola aqui, após o bloco acima */}
+                  {item.confirmado && item.semEstoque && (
+                    <View style={style.alertaEstoque}>
+                      <MaterialCommunityIcons
+                        name="alert-circle-outline"
+                        size={14}
+                        color={colors.error}
+                      />
+                      <Text style={style.alertaEstoqueText}>
+                        Estoque insuficiente · disponível: {item.estoqueAtual}{" "}
+                        un.
+                      </Text>
+                    </View>
+                  )}
+                </View>
+              ))}
+            </View>
+          )}
+
+          {/* ── Total ── */}
+          {/* ── Desconto ── */}
+          {itensConfirmados.length > 0 && (
+            <View style={style.descontoCard}>
+              {/* Checkbox de desconto */}
+              <TouchableOpacity
+                style={style.checkboxRow}
+                onPress={() => handleToggleDesconto(!descontoAtivo)}
+                activeOpacity={0.7}
+              >
+                <View
+                  style={[
+                    style.checkbox,
+                    descontoAtivo && style.checkboxChecked,
+                  ]}
+                >
+                  {descontoAtivo && (
+                    <MaterialCommunityIcons
+                      name="check"
+                      size={14}
+                      color={colors.background}
+                    />
+                  )}
+                </View>
+                <Text style={style.checkboxLabel}>Aplicar desconto</Text>
+              </TouchableOpacity>
+
+              {/* Input de desconto — aparece ao ativar */}
+              {descontoAtivo && (
+                <View style={style.descontoInputRow}>
+                  <View style={style.descontoInputWrapper}>
+                    <TextInput
+                      style={style.descontoInput}
+                      value={inputDesconto}
+                      onChangeText={setInputDesconto}
+                      keyboardType="decimal-pad"
+                      placeholder="0"
+                      placeholderTextColor={colors.textFaint}
+                      maxLength={5}
+                    />
+                    <Text style={style.descontoSufixo}>%</Text>
+                  </View>
+
+                  <TouchableOpacity
+                    style={style.descontoBtn}
+                    onPress={aplicarDesconto}
+                  >
+                    <Text style={style.descontoBtnText}>Aplicar</Text>
+                  </TouchableOpacity>
+
+                  {/* Alerta visual se > 10% */}
+                  {descontoAplicado > 10 && (
+                    <View style={style.descontoAlerta}>
+                      <MaterialCommunityIcons
+                        name="alert-circle-outline"
+                        size={14}
+                        color={colors.warning}
+                      />
+                      <Text style={style.descontoAlertaText}>
+                        Desconto acima de 10%
+                      </Text>
+                    </View>
+                  )}
+                </View>
+              )}
+
+              {/* Linha de desconto aplicado */}
+              {descontoAplicado > 0 && (
+                <View style={style.descontoResumo}>
+                  <Text style={style.descontoResumoLabel}>
+                    Desconto ({descontoAplicado}%)
+                  </Text>
+                  <Text style={style.descontoResumoValor}>
+                    − {formatarMoeda(valorDesconto)}
+                  </Text>
+                </View>
+              )}
+            </View>
+          )}
+
+          {/* Forma de pagamento */}
+
+          <View style={style.pickerWrapper}>
+            <Text style={style.pickerLabel}>Forma de Pagamento</Text>
+            <Picker
+              selectedValue={forma_pagamento}
+              onValueChange={(value) =>
+                setFormaPagamento(value as FormaPagamento)
+              }
+              style={style.picker}
+              dropdownIconColor={colors.yellow}
+            >
+              {FORMAS_PAGAMENTO.map((forma) => (
+                <Picker.Item
+                  key={forma}
+                  label={forma}
+                  value={forma}
+                  color={colors.text}
+                  style={{ backgroundColor: colors.surface }}
+                />
+              ))}
+            </Picker>
+          </View>
+
+          {/* ── Total ── */}
+          {itensConfirmados.length > 0 && (
+            <View style={style.totalCard}>
+              {descontoAplicado > 0 && (
+                <View style={style.totalSubtotalRow}>
+                  <Text style={style.totalSubtotalLabel}>Subtotal</Text>
+                  <Text style={style.totalSubtotalValor}>
+                    {formatarMoeda(totalVenda)}
+                  </Text>
+                </View>
+              )}
+              <Text style={style.totalLabel}>Total da venda</Text>
+              <Text style={style.totalValor}>
+                {formatarMoeda(totalComDesconto)}
+              </Text>
+            </View>
+          )}
+
+          {/* ══════════════════════════════════════════
+            RODAPÉ: E-MAIL + BOTÃO
+        ══════════════════════════════════════════ */}
+          <View style={style.footer}>
+            {/* Checkbox de e-mail */}
+            <TouchableOpacity
+              style={[
+                style.checkboxRow,
+                semCadastro && style.checkboxRowDisabled,
+              ]}
+              onPress={() => {
+                if (!semCadastro) setEnviarEmail((prev) => !prev);
+              }}
+              activeOpacity={semCadastro ? 1 : 0.7}
+            >
+              <View
+                style={[
+                  style.checkbox,
+                  enviarEmail && !semCadastro && style.checkboxChecked,
+                  semCadastro && style.checkboxDisabled,
+                ]}
+              >
+                {enviarEmail && !semCadastro && (
+                  <MaterialCommunityIcons
+                    name="check"
+                    size={14}
+                    color={colors.background}
+                  />
+                )}
+              </View>
+              <View>
+                <Text
+                  style={[
+                    style.checkboxLabel,
+                    semCadastro && style.checkboxLabelDisabled,
+                  ]}
+                >
+                  Enviar nota por e-mail
+                </Text>
+                {semCadastro && (
+                  <Text style={style.checkboxHint}>
+                    Indisponível para cliente sem cadastro
+                  </Text>
+                )}
+              </View>
+            </TouchableOpacity>
+
+            {/* Botão confirmar venda */}
+            <Pressable
+              style={({ pressed }) => [
+                style.btnConfirmar,
+                pressed && style.btnConfirmarPressed,
+                loading && style.btnConfirmarDisabled,
+              ]}
+              onPress={handleConfirmarVenda}
+              disabled={loading}
+            >
+              <MaterialCommunityIcons
+                name="cart-check"
+                size={20}
+                color={colors.background}
+              />
+              <Text style={style.btnConfirmarText}>
+                {loading ? "Registrando..." : "Confirmar Venda"}
+              </Text>
+            </Pressable>
+          </View>
+        </Animated.ScrollView>
+      </KeyboardAwareScrollView>
     </View>
   );
 }
