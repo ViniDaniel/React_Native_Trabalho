@@ -56,13 +56,20 @@
 # MELHORIAS SOLICITADAS PELO GRUPO TASKFY / GERENCIADOR DE TAREFAS
 
 ● Botão de deslogar mais intuitivo;✅
+
 ● Ao cadastrar o produto poderia haver um pop up perguntando se quer cadastrar
 outro;✅
+
 ● Adicionar opção de cnpj no cadastro de clientes;✅
+
 ● Definir maximo e mínimo em estoque;✅
+
 ● Criar botão de conta do usuário;✅
+
 ● Adicionar os tipos de pagamento pix, credito e etc…✅
+
 ●Confirmação de produto para venda pouco visível;✅
+
 ● Após a criação de um novo produto, ele não retorna para a página inicial, dando a
 sensação do produto não ter sido cadastrado.✅
 
